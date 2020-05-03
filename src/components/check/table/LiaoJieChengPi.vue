@@ -20,159 +20,194 @@ td{
   <div>
     <h1>中共内蒙古自治区农村信用社联合社检查委员会</h1>
     <h1>初步核实报告呈批表</h1>
-      <Form>
-        <table>
-          <tbody>
-              <tr>
-                <td>线索来源</td>
-                <td colspan="3">
-                  {{wenTiXianSuo_xianSuoLaiYuan}}
-                </td>
-                <td>线索编号</td>
-                <td>
-                  {{wenTiXianSuo_xuHao}}
-                </td>
-              </tr>
+    <Form>
+      <table>
+        <tbody>
+          <tr>
+            <td>线索来源</td>
+            <td colspan="3">
+              {{showData.wenTiXianSuo_xianSuoLaiYuan}}
+            </td>
+            <td>线索编号</td>
+            <td>
+              {{showData.wenTiXianSuo_xuHao}}
+            </td>
+          </tr>
 
-              <tr>
-                <td>收件日期</td>
-                <td>
-                  {{wenTiXianSuo_shouDaoShiJian}}
-                </td>
-                <td>反映人</td>
-                <td>
-                  {{wenTiXianSuo_fanYingRen}}
-                </td>
-                <td>性别</td>
-                <td>
-                  {{wenTiXianSuo_xingBie}}
-                </td>
-              </tr>
-              
-              <tr>
-                <td>政治面貌</td>
-                <td>
-                  {{wenTiXianSuo_zhengZhiMianMao}}
-                </td>
-                <td>联系电话</td>
-                <td>
-                  {{wenTiXianSuo_dianHua}}
-                </td>
-                <td>通讯地址</td>
-                <td >
-                  {{wenTiXianSuo_diZhi}}
-                </td>
-              </tr>
+          <tr>
+            <td>收件日期</td>
+            <td>
+              {{showData.wenTiXianSuo_shouDaoShiJian}}
+            </td>
+            <td>反映人</td>
+            <td>
+              {{showData.wenTiXianSuo_fanYingRen}}
+            </td>
+            <td>性别</td>
+            <td>
+              {{showData.wenTiXianSuo_xingBie}}
+            </td>
+          </tr>
+          
+          <tr>
+            <td>政治面貌</td>
+            <td>
+              {{showData.wenTiXianSuo_zhengZhiMianMao}}
+            </td>
+            <td>联系电话</td>
+            <td>
+              {{showData.wenTiXianSuo_dianHua}}
+            </td>
+            <td>通讯地址</td>
+            <td >
+              {{showData.wenTiXianSuo_diZhi}}
+            </td>
+          </tr>
 
-              <tr>
-                <td>工作单位</td>
-                <td colspan="2">
-                  {{wenTiXianSuo_fanYingRenDanWei}}
-                </td>
-                <td>职务</td>
-                <td colspan="3">
-                  {{wenTiXianSuo_fanYingRenZhiWu}}
-                </td>
-              </tr>
+          <tr>
+            <td>工作单位</td>
+            <td colspan="2">
+              {{showData.wenTiXianSuo_fanYingRenDanWei}}
+            </td>
+            <td>职务</td>
+            <td colspan="3">
+              {{showData.wenTiXianSuo_fanYingRenZhiWu}}
+            </td>
+          </tr>
 
-              <tr>
-                <td>被反映人</td>
-                <td colspan="5">
-                  {{wenTiXianSuo_beiFanYingRen}}
-                </td>
-              </tr>
+          <tr>
+            <td>被反映人</td>
+            <td colspan="5">
+              {{showData.wenTiXianSuo_beiFanYingRen}}
+            </td>
+          </tr>
 
-              <tr>
-                <td>工作单位</td>
-                <td colspan="2">
-                  {{wenTiXianSuo_beiFanYingRenDanWei}}
-                </td>
-                <td>职务</td>
-                <td colspan="3">
-                  {{wenTiXianSuo_beiFanYingRenZhiWu}}
-                </td>
-              </tr>
+          <tr>
+            <td>工作单位</td>
+            <td colspan="2">
+              {{showData.wenTiXianSuo_beiFanYingRenDanWei}}
+            </td>
+            <td>职务</td>
+            <td colspan="3">
+              {{showData.wenTiXianSuo_beiFanYingRenZhiWu}}
+            </td>
+          </tr>
 
-              <tr>
-                <td>反映主要问题</td>
-                <td colspan="5">
-                  {{wenTiXianSuo_fanYingZhuYaoWenTi}}
-                </td>
-              </tr>
+          <tr>
+            <td>反映主要问题</td>
+            <td colspan="5">
+              {{showData.wenTiXianSuo_fanYingZhuYaoWenTi}}
+            </td>
+          </tr>
 
-              <tr>
-                <td>拟办/审批意见</td>
-                <td colspan="5">
-                  XXXXXXXXXXXX 待编写 XXXXXXXXXXXX
-                </td>
-              </tr>
-            </tbody>
-        </table>
-      </Form>
+          <tr>
+            <td>拟办/审批意见</td>
+            <td colspan="5">
+              XXXXXXXXXXXX 待编写 XXXXXXXXXXXX
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-      <!-- 上传附件 待编写 -->
-      <div>
-        了结理由及情况说明：
-        <Input type="text" v-model="tanHuaHanXun_niBanYiJian" style="width:200px"/>
+      <FormItem prop="tanHuaHanXun_niBanYiJian" label="了结理由及情况说明：" :label-width="220">
+        <Input type="textarea" v-model="tanHuaHanXun_niBanYiJian" style="width:200px"/>
+      </FormItem>
+
+      <div v-if="this.leaderList.length > 0">
+        <FormItem prop="wenTiXianSuo_shenPiLingDao" label="批办领导" :label-width="220">
+          <Select v-model="wenTiXianSuo_shenPiLingDao" style="width:200px">
+            <Option v-for="item in leaderList" :value="item.userCode" :key="item.id">{{ item.userName }}</Option>
+          </Select>
+        </FormItem>
       </div>
+    </Form>
 
-      <div>
-        后续处置方式：
-        <Select v-model="chuBuHeShi_baoGao_houXuChuZhiFangShi" style="width:200px">
-          <Option value='予以了结'>予以了结</Option>
-          <Option value='拟立案审查'>拟立案审查</Option>
-          <Option value='移交有关党组织处理'>移交有关党组织处理</Option>
-          <Option value='谈话提醒'>谈话提醒</Option>
-        </Select>
-      </div>
-
-      <div>
-        批办领导：
-        <Select v-model="wenTiXianSuo_shenPiLingDao" style="width:200px">
-          <Option v-for="item in candidateUsers" :value="item.userCode" :key="item.id">{{ item.userName }}</Option>
-        </Select>
-      </div>
-
-      
-      <Row style="padding-top:25px">
-          <Col offset="13" span="2">
-            <Button type="default" v-on:click="back">返回</Button>
-          </Col>
-          <Col span="2">
-            <Button type="submit" v-on:click="submit">提交</Button>
-          </Col>
-      </Row>
+    <Row style="padding-top:25px">
+        <Col offset="13" span="2">
+          <Button type="default" v-on:click="back">返回</Button>
+        </Col>
+        <Col span="2">
+          <Button type="submit" v-on:click="submit">提交</Button>
+        </Col>
+    </Row>
   </div>
 </template>
 <script>
 import GLOBAL from '@/components/common/GlobalConstant'
 import {get,post} from '@/utils/http'
-    export default {
-        created(){
-            this.load();
-        },
-        data () {
-            return {
-
-            }
-        },
-        methods: {
-            load(){
-                var url = 'activiti/process/instance?processInstanceId=' + this.$store.state.processInstanceId
-                get(url, {
-                    
-                }).then(res => {
-                    
-                })
-            },
-            back(){
-                this.$router.push({ path: 'clue-clueList' })
-            },
-            submit(){
-              
-            }
-        },
-        computed:{
-        }
+export default {
+  created(){
+    this.load();
+  },
+  data () {
+    return {
+      id:'',
+      type:'',
+      dataSource: {},
+      leaderList: [],
+      leader: '',
+      data: [],
+      leaderOption: [],
+      showData:{
+        wenTiXianSuo_xianSuoLaiYuan:'',
+        wenTiXianSuo_xuHao:'',
+        wenTiXianSuo_shouDaoShiJian:'',
+        wenTiXianSuo_fanYingRen:'',
+        wenTiXianSuo_xingBie:'',
+        wenTiXianSuo_zhengZhiMianMao:'',
+        wenTiXianSuo_dianHua:'',
+        wenTiXianSuo_diZhi:'',
+        wenTiXianSuo_fanYingRenDanWei:'',
+        wenTiXianSuo_fanYingRenZhiWu:'',
+        wenTiXianSuo_beiFanYingRen:'',
+        wenTiXianSuo_beiFanYingRenDanWei:'',
+        wenTiXianSuo_beiFanYingRenZhiWu:'',
+        wenTiXianSuo_fanYingZhuYaoWenTi:'',
+      },
+      tanHuaHanXun_niBanYiJian:'',
+      wenTiXianSuo_shenPiLingDao:'',
     }
+  },
+  methods: {
+    load(){
+       get(`activiti/process/instance?processInstanceId=${this.id}`).then(res => {
+        this.dataSource = res.data.form
+        this.data = res.data
+        this.showData = res.data.form
+        this.leaderOption = res.data.form.chuBuHeShi_chengPiYiJian
+      })
+    },
+    back(){
+      this.$router.push({ path: 'clue-clueList' })
+    },
+    submit(){
+      let data = this.data
+      let values = {}
+      let leader = this.wenTiXianSuo_shenPiLingDao
+      const taskid = data.historicUserTaskInstanceList[data.historicUserTaskInstanceList.length - 1].taskInstanceId
+      const processInstanceId = data.processInstanceId
+
+      let yijianArr = []
+      if (this.dataSource.chuBuHeShi_chengPiYiJian) {
+        yijianArr = this.dataSource.chuBuHeShi_chengPiYiJian
+      }
+      const obj = {
+        name: window.USER.userName,
+        usercode: window.USER.userCode,
+        type: '了结理由及情况说明',
+        advise: this.chuBuHeShi_chengPiYiJian ? this.chuBuHeShi_chengPiYiJian : '',
+        time: this.$moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
+      }
+      yijianArr.push(obj)
+      values.chuBuHeShi_chengPiYiJian = yijianArr
+      values.chuBuHeShi_chengPiYiJian = '了结呈批已登记'
+      post(
+        `thread/claimAndComplete?taskId=${taskid}&processInstanceId=${processInstanceId}&nextAssignee=${this.leader}&isLocal=${0}`,
+        values
+      ).then(res => {
+        this.$Message.info('提交成功')
+      })
+    }
+  }
+}
 </script>

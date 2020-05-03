@@ -172,6 +172,8 @@ import { formatLeader, isLeader, methodForIsLeader, utils } from '@/components/c
     },
     methods: {
       load(){
+        this.id = this.$route.params.id
+        this.type = this.$route.params.type
         get(`activiti/process/instance?processInstanceId=${this.id}`).then(async res => {
           this.dataSource = res.data.form
           this.data = res.data
@@ -190,7 +192,7 @@ import { formatLeader, isLeader, methodForIsLeader, utils } from '@/components/c
         this.$router.push({ path: '/admin/talk/list' })
       },
       submit(){
-        let time = moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
+        let time = this.$moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
         let leader
         let tanHuaArr = []
         let yijianArr = []

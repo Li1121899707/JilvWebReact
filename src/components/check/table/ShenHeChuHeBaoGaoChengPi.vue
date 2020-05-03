@@ -1,4 +1,4 @@
-// 初步核实 —— 初步核实呈批表 —— 审批
+// 初步核实 —— 初步核实报告呈批表
 
 <style scoped>
 table{
@@ -19,7 +19,7 @@ td{
 <template>
   <div>
     <h1>中共内蒙古自治区农村信用社联合社检查委员会</h1>
-    <h1>初步核实呈批表</h1>
+    <h1>初步核实报告呈批表</h1>
     <Form>
       <table>
         <tbody>
@@ -73,10 +73,17 @@ td{
               XXXXXXXXXXXX 待编写 XXXXXXXXXXXX
             </td>
           </tr>
+
+          <tr>
+            <td>核实基本情况</td>
+            <td colspan="6">
+              {{showData.chuBuHeShi_baoGao_heShiJiBenQingKuang}}
+            </td>
+          </tr>
         </tbody>
       </table>
 
-      <FormItem prop="chuBuHeShi_chengPiYiJian" label="意见" :label-width="220">
+      <FormItem prop="chuBuHeShi_chengPiYiJian" label="领导审批意见" :label-width="220">
         <Input type="textarea" v-model="chuBuHeShi_chengPiYiJian" style="width:200px"/>
       </FormItem>
 
@@ -88,7 +95,7 @@ td{
         </FormItem>
       </div>
     </Form>
-
+    
     <Row style="padding-top:25px">
         <Col offset="13" span="2">
           <Button type="default" v-on:click="back">返回</Button>
@@ -102,24 +109,24 @@ td{
 <script>
 import GLOBAL from '@/components/common/GlobalConstant'
 import {get,post} from '@/utils/http'
+import { concatForArr } from '@/utils/concat'
 import { formatLeader, isLeader, methodForIsLeader, utils } from '@/components/common/utils'
 
 export default {
   created(){
-      this.load();
+    this.load();
   },
   data () {
     return {
       id:'',
       type:'',
+      leader:'',
+      statusKey: 'chuBuHeShiBaoGao',
       dataSource: {},
       leaderList: [],
-      leader: '',
-      data: [],
       leaderOption_wenTiXianSUO: [],
       leaderOption_tanHuaHanXun: [],
       leaderOption_chuBuHeShi: [],
-      taskDefinitionKey: '',
       showData:{
         wenTiXianSuo_xianSuoLaiYuan:'',
         wenTiXianSuo_beiFanYingRen:'',
@@ -128,7 +135,8 @@ export default {
         wenTiXianSuo_beiFanYingRenZhengZhiMianMao:'',
         wenTiXianSuo_beiFanYingRenIsRenDaDaiBiao:'',
         wenTiXianSuo_beiFanYingRenMinZu:'',
-        wenTiXianSuo_fanYingZhuYaoWenTi:''
+        wenTiXianSuo_fanYingZhuYaoWenTi:'',
+        chuBuHeShi_baoGao_heShiJiBenQingKuang:'',
       },
       chuBuHeShi_chengPiYiJian:'',
       wenTiXianSuo_shenPiLingDao:'',
@@ -144,44 +152,55 @@ export default {
           ? this.$moment(res.data.form.wenTiXianSuo_beiFanYingRenBorn).format('YYYY-MM-DD')
           : null
 
-        this.dataSource = res.data.form
-        this.data = res.data
-        this.showData = res.data.form
-        this.leaderOption_wenTiXianSUO = res.data.form.wenTiXianSuo_niBanYiJian ? res.data.form.wenTiXianSuo_niBanYiJian : []
-        this.leaderOption_tanHuaHanXun = res.data.form.tanHuaHanXun_yiJian ? res.data.form.tanHuaHanXun_yiJian : []
-        this.leaderOption_chuBuHeShi
+        this.dataSource = res.data.form,
+        this.data = res.data,
+        this.leaderOption_wenTiXianSUO = res.data.form.wenTiXianSuo_niBanYiJian ? res.data.form.wenTiXianSuo_niBanYiJian : [],
+        this.leaderOption_tanHuaHanXun = res.data.form.tanHuaHanXun_yiJian ? res.data.form.tanHuaHanXun_yiJian : [],
+        this.leaderOption_chuBuHeShi = leaderOption_chuBuHeShi
         this.taskDefinitionKey = res.data.historicUserTaskInstanceList[res.data.historicUserTaskInstanceList.length - 1].taskDefinitionKey
+
         this.huoquhouxunaren()
       })
     },
-    //获取下一任务候选人接口
     huoquhouxunaren = async () => {
       const taskGroup = this.data.historicUserTaskInstanceList[this.data.historicUserTaskInstanceList.length - 1].taskDefinitionKey
       const { leaderList, taskDefinitionKey } = await utils(taskGroup, this.statusKey)
-      this.leaderList = leaderList
+      this.leaderList  = leaderList
       this.taskDefinitionKey = taskDefinitionKey
     },
     back(){
-        this.$router.push({ path: 'clue-clueList' })
+      this.$router.push({ path: 'clue-clueList' })
     },
     submit(){
       let data = this.data
-      let taskDefinitionKey = this.taskDefinitionKey
+      let dataSource = this.dataSource
       const taskid = data.historicUserTaskInstanceList[data.historicUserTaskInstanceList.length - 1].taskInstanceId
       const processInstanceId = data.processInstanceId
       let leader
-      let value = {}
-
-      if (taskDefinitionKey === 'chuBuHeShi_chengpi') {
-        values.chuBuHeShi_status = '已登记'
-      } else if (taskDefinitionKey === 'chuBuHeShi_dangWeiShuJi') {
-        values.chuBuHeShi_status = '已审批'
+      let values = {}
+      const { taskDefinitionKey } = data.historicUserTaskInstanceList[data.historicUserTaskInstanceList.length - 1]
+      if (taskDefinitionKey === 'chuBuHeShi_baoGaochengpi') {
+        values.chuBuHeShi_status = '已登记初核报告'
+      } else if (taskDefinitionKey === 'chuBuHeShiBaoGao_dangWeiShuJi') {
+        values.chuBuHeShi_status = '初核报告已审批'
+        if (dataSource.chuBuHeShi_baoGao_houXuChuZhiFangShi === '拟立案审查') {
+          values.status = '审查调查'
+          values.flow_path = `${dataSource.flow_path},审查调查`
+          values.shenChaDiaoCha_childstatus = '立案准备'
+          values.shenChaDiaoCha_status = '未登记'
+        }
       } else {
-        values.chuBuHeShi_status = '审批中'
+        values.chuBuHeShi_status = '初核报告审批中'
       }
       methodForIsLeader(this.leader, this.statusKey, function(item, show, key) {
         if (show) {
-          values.chuBuHeShi_status = '已审批'
+          values.chuBuHeShi_status = '初核报告已审批'
+          if (dataSource.chuBuHeShi_baoGao_houXuChuZhiFangShi === '拟立案审查') {
+            values.status = '审查调查'
+            values.flow_path = `${dataSource.flow_path},审查调查`
+            values.shenChaDiaoCha_childstatus = '立案准备'
+            values.shenChaDiaoCha_status = '未登记'
+          }
           leader = ''
         } else {
           leader = key
@@ -191,22 +210,20 @@ export default {
         })
       })
       const leaderType = formatLeader(this.taskDefinitionKey, this.statusKey)
-      let yijianArr = data.form.chuBuHeShi_chuBuHeShiChengPi ? data.form.chuBuHeShi_chuBuHeShiChengPi : []
+      let yijianArr = data.form.chuBuHeShi_chuHeBaoGaoChengPi ? data.form.chuBuHeShi_chuHeBaoGaoChengPi : []
       const obj = {
         name: window.USER.userName,
         usercode: window.USER.userCode,
-        type: taskDefinitionKey === 'chuBuHeShi_chengpi' ? '初步核实拟办意见' : '初步核实审批意见',
-        advise: this.chuBuHeShi_chengPiYiJian ? this.chuBuHeShi_chengPiYiJian : '',
+        type: taskDefinitionKey === 'chuBuHeShi_chengpi' ? '初步核实报告拟办意见' : '初步核实报告审批意见',
+        advise: values.chuBuHeShi_chengPiYiJian ? values.chuBuHeShi_chengPiYiJian : '',
         time: this.$moment(new Date()).format('YYYY-MM-DD hh:mm:ss'),
-        leaderType,
-        link: taskDefinitionKey === 'chuBuHeShi_chengpi' ? `/admin/petition/check/show/${processInstanceId}/ChuBuHeShiChengPi` : ''
+        leaderType
       }
       yijianArr.push(obj)
-      values.chuBuHeShi_chuBuHeShiChengPi = yijianArr
-      // values.chuBuHeShi_RiQi = new Date()
+      values.chuBuHeShi_chuHeBaoGaoChengPi = yijianArr
       post(`thread/claimAndComplete?taskId=${taskid}&processInstanceId=${processInstanceId}&nextAssignee=${leader}&isLocal=${0}`, values).then(
         res => {
-          this.$Message.info('提交成功')
+          notification.success({ message: '提交成功' })
         }
       )
     }

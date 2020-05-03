@@ -1,4 +1,4 @@
-// 问题线索 —— 了结呈批 4-29
+// 问题线索 —— 了结呈批 4-29 show/add 未动态显示
 
 <style scoped>
 table{
@@ -104,11 +104,13 @@ td{
           <Input type="textarea" v-model="formData.wenTiXianSuo_liaoJieLiYou" style="width:200px"/>
         </FormItem>
 
-        <FormItem prop="leader" label="批办领导" label-width="220">
-          <Select v-model="leader" style="width:200px">
-            <Option v-for="item in leaderList" :value="item.userCode" :key="item.id">{{ item.userName }}</Option>
-          </Select>
-        </FormItem>
+        <div v-if="this.leaderList.length > 0">
+          <FormItem prop="leader" label="批办领导" label-width="220">
+            <Select v-model="leader" style="width:200px">
+              <Option v-for="item in leaderList" :value="item.userCode" :key="item.id">{{ item.userName }}</Option>
+            </Select>
+          </FormItem>
+        </div>
       </Form>
 
       <Row style="padding-top:25px">

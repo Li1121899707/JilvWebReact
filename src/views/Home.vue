@@ -75,11 +75,9 @@
                 </Menu>
             </Sider>
             <Layout>
-                
-                <Content :style="{padding: '0 16px 16px'}">
-                    <div style="height:30px"></div>
+                <Content :style="{padding: '5px'}">
                     <Card>
-                        <div style="height: 800px">
+                        <div style="height: 868px">
                             <router-view v-bind:fatherData="childRouterNum"></router-view>
                         </div>
                     </Card>
@@ -89,8 +87,11 @@
     </div>
 </template>
 <script>
-
+import {get} from '@/utils/http'
     export default {
+        created(){
+            this.getUser()
+        },
         data () {
             return {
                 isCollapsed: false,
@@ -107,6 +108,12 @@
             }
         },
         methods:{
+            getUser(){
+                get('sys/user-employees/currentUserInfo').then(res => {
+                    window.USER = res.data
+                    console.log(window.USER)
+                })
+            },
             selectMenu(event){
                 if(this.activeName === event){
                     return

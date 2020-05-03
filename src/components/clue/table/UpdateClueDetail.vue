@@ -199,7 +199,7 @@ import {get,post} from '@/utils/http'
                 })
             },
             back(){
-                this.$router.push({ path: 'clue-clueList' })
+                this.$router.push({ path: '/admin/clue/disposal' })
             },
             submit(){
               var values = {

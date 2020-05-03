@@ -54,8 +54,7 @@ import {post} from '@/utils/http'
                     if (valid) {
                         var values = this.formInline;
                         // 执行登录
-                        this.$router.push({path:'/admin'});
-                            post('authenticate', values).then(res => {
+                        post('authenticate', values).then(res => {
                             const data = res.data
                             sessionStorage.clear() // 重新登录时，需要清楚之前的session
                             sessionStorage.setItem('token', data.id_token)

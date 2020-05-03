@@ -1,4 +1,4 @@
-// 问题线索登记表
+// 问题线索登记表 （未更正）
 
 <style scoped>
 table{
@@ -185,7 +185,7 @@ import {get} from '@/utils/http'
                 })
             },
             back(){
-                this.$router.push({ path: 'clue-clueList' })
+                this.$router.push({ path: '/admin/clue/disposal' })
             }
         },
         computed:{

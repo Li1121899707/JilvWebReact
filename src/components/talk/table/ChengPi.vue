@@ -26,45 +26,45 @@ td{
                 <tr>
                   <td>谈话函询对象</td>
                   <td colspan="2">
-                    {{wenTiXianSuo_beiFanYingRen}}
+                    {{showData.wenTiXianSuo_beiFanYingRen}}
                   </td>
                   <td>单位</td>
                   <td colspan="2">
-                    {{wenTiXianSuo_beiFanYingRenDanWei}}
+                    {{showData.wenTiXianSuo_beiFanYingRenDanWei}}
                   </td>
                   <td>职务</td>
                   <td>
-                    {{wenTiXianSuo_beiFanYingRenZhiWu}}
+                    {{showData.wenTiXianSuo_beiFanYingRenZhiWu}}
                   </td>
                 </tr>
                 <tr>
                   <td>性别</td>
                   <td>
-                    {{wenTiXianSuo_beiFanYingRenXingBie}}
+                    {{showData.wenTiXianSuo_beiFanYingRenXingBie}}
                   </td>
                   <td>年龄</td>
                   <td>
-                    {{wenTiXianSuo_beiFanYingRenNianLing}}
+                    {{showData.wenTiXianSuo_beiFanYingRenNianLing}}
                   </td>
                   <td >政治面貌</td>
                   <td >
-                    {{wenTiXianSuo_beiFanYingRenZhengZhiMianMao}}
+                    {{showData.wenTiXianSuo_beiFanYingRenZhengZhiMianMao}}
                   </td>
                   <td >民族</td>
                   <td >
-                    {{wenTiXianSuo_beiFanYingRenMinZu}}
+                    {{showData.wenTiXianSuo_beiFanYingRenMinZu}}
                   </td>
                 </tr>
                 <tr>
                   <td>线索来源</td>
                   <td colspan="7">
-                    {{wenTiXianSuo_xianSuoLaiYuan}}
+                    {{showData.wenTiXianSuo_xianSuoLaiYuan}}
                   </td>
                 </tr>
                 <tr>
                   <td>反应的主要问题摘要</td>
                   <td colspan="7">
-                    {{wenTiXianSuo_fanYingZhuYaoWenTi}}
+                    {{showData.wenTiXianSuo_fanYingZhuYaoWenTi}}
                   </td>
                 </tr>
                 <tr>
@@ -74,19 +74,17 @@ td{
                 <tr>
                   <td>拟办意见</td>
                   <td colspan="7">
-                    <Input type="text" v-model="chuBuHeShi_chengPiYiJian"/>
+                    <Input type="text" v-model="tanHuaHanXun_niBanYiJian"/>
                   </td>
                 </tr>
               </tbody>
           </table>
+          <FormItem prop="wenTiXianSuo_shenPiLingDao" label="批办领导" :label-width="220">
+            <Select v-model="wenTiXianSuo_shenPiLingDao" style="width:200px">
+              <Option v-for="item in leaderList" :value="item.userCode" :key="item.id">{{ item.userName }}</Option>
+            </Select>
+          </FormItem>
         </Form>
-
-        <div>
-          批办领导：
-          <Select v-model="wenTiXianSuo_shenPiLingDao" style="width:200px">
-            <Option v-for="item in candidateUsers" :value="item.userCode" :key="item.id">{{ item.userName }}</Option>
-          </Select>
-        </div>
 
         <Row style="padding-top:25px">
             <Col offset="13" span="2">
@@ -101,49 +99,107 @@ td{
 <script>
 import GLOBAL from '@/components/common/GlobalConstant'
 import {get,post} from '@/utils/http'
-    export default {
-        created(){
-            this.load();
+  export default {
+    created(){
+      this.load();
+    },
+    data () {
+      return {
+        showData:{
+          id:'',
+          dataSource: {},
+          leaderList: [],
+          leader: '',
+          leaderOption_wenTiXianSUO: [],
+          leaderOption_tanHuaHanXun: [],
+          data: {},
+          wenTiXianSuo_beiFanYingRen:'',
+          wenTiXianSuo_beiFanYingRenDanWei:'',
+          wenTiXianSuo_beiFanYingRenZhiWu:'',
+          wenTiXianSuo_beiFanYingRenXingBie:'',
+          wenTiXianSuo_beiFanYingRenNianLing:'',
+          wenTiXianSuo_beiFanYingRenZhengZhiMianMao:'',
+          wenTiXianSuo_beiFanYingRenMinZu:'',
+          wenTiXianSuo_xianSuoLaiYuan:'',
+          wenTiXianSuo_fanYingZhuYaoWenTi:'',
         },
-        data () {
-            return {
-                wenTiXianSuo_beiFanYingRen:'',
-                wenTiXianSuo_beiFanYingRenDanWei:'',
-                wenTiXianSuo_beiFanYingRenZhiWu:'',
-                wenTiXianSuo_beiFanYingRenXingBie:'',
-                wenTiXianSuo_beiFanYingRenNianLing:'',
-                wenTiXianSuo_beiFanYingRenZhengZhiMianMao:'',
-                wenTiXianSuo_beiFanYingRenMinZu:'',
-                wenTiXianSuo_xianSuoLaiYuan:'',
-                wenTiXianSuo_fanYingZhuYaoWenTi:'',
-                dataSource:[]
-            }
-        },
-        methods: {
-            load(){
-                var url = 'activiti/process/instance?processInstanceId=' + this.$store.state.processInstanceId
-                get(url, {
-                    
-                }).then(res => {
-                    this.wenTiXianSuo_beiFanYingRen = res.data.form.wenTiXianSuo_beiFanYingRen
-                    this.wenTiXianSuo_beiFanYingRenDanWei = res.data.form.wenTiXianSuo_beiFanYingRenDanWei
-                    this.wenTiXianSuo_beiFanYingRenZhiWu = res.data.form.wenTiXianSuo_beiFanYingRenZhiWu
-                    this.wenTiXianSuo_beiFanYingRenXingBie = res.data.form.wenTiXianSuo_beiFanYingRenXingBie
-                    this.wenTiXianSuo_beiFanYingRenNianLing = res.data.form.wenTiXianSuo_beiFanYingRenNianLing
-                    this.wenTiXianSuo_beiFanYingRenZhengZhiMianMao = res.data.form.wenTiXianSuo_beiFanYingRenZhengZhiMianMao
-                    this.wenTiXianSuo_beiFanYingRenMinZu = res.data.form.wenTiXianSuo_beiFanYingRenMinZu
-                    this.wenTiXianSuo_xianSuoLaiYuan = res.data.form.wenTiXianSuo_xianSuoLaiYuan
-                    this.wenTiXianSuo_fanYingZhuYaoWenTi = res.data.form.wenTiXianSuo_fanYingZhuYaoWenTi
-                })
-            },
-            back(){
-                this.$router.push({ path: 'clue-clueList' })
-            },
-            submit(){
-              
-            }
-        },
-        computed:{
+        wenTiXianSuo_shenPiLingDao:'',
+        tanHuaHanXun_niBanYiJian:'',
+        
+      }
+    },
+    methods: {
+      load(){
+        this.id = this.$route.params.id
+        get(`activiti/process/instance?processInstanceId=${this.id}`).then(res => {
+          this.dataSource = res.data.form
+          this.data = res.data,
+          this.showData = res.data.form
+          this.leaderOption_wenTiXianSUO = res.data.form.wenTiXianSuo_niBanYiJian ? res.data.form.wenTiXianSuo_niBanYiJian : []
+          this.leaderOption_tanHuaHanXun = res.data.form.tanHuaHanXun_yiJian ? res.data.form.tanHuaHanXun_yiJian : []
+        })
+
+      },
+      huoquhouxunaren = () => {
+        let processDefinitionKey = GLOBAL.processDefinitionKey
+        let taskId = 'tanHuaHanXun_jiJianJianChaShi'
+        get(`activiti/process/${processDefinitionKey}/tasks/${taskId}/candidateUsers`).then(res => {
+          this.leaderList = res.data
+        })
+      },
+      back(){
+        this.$router.push({ path: '/admin/talk/list' })
+      },
+      submit(){
+        let processDefinitionKey = GLOBAL.processDefinitionKey
+        let time = this.$moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
+        const taskid = this.data.historicUserTaskInstanceList[this.data.historicUserTaskInstanceList.length - 1].taskInstanceId
+        const taskName = this.data.historicUserTaskInstanceList[this.data.historicUserTaskInstanceList.length - 1].taskName
+        const processInstanceId = this.data.processInstanceId
+        if (taskName !== '填写谈话函询呈批表') {
+          this.$Message.error('该呈批表已填写')
+          return
         }
+        let values = {}
+        values.tanHuaHanXun_status = '已登记'
+        values.tanHuaHanXun_RiQi = new Date()
+        this.leader = this.wenTiXianSuo_shenPiLingDao
+        const yijianArr = []
+        //let filesArr = []
+        let tanHuaArr = []
+        if (this.dataSource.tanHuaHanXun_yiJian) {
+          tanHuaArr = this.dataSource.tanHuaHanXun_yiJian
+        }
+        // if (this.dataSource.tanHuaHanXun_files) {
+        //   filesArr = this.dataSource.tanHuaHanXun_files
+        // }
+        const arrObj = {}
+        //const fileObj = {}
+        const obj = {
+          name: window.USER.userName,
+          usercode: window.USER.userCode,
+          type: '拟办意见',
+          advise: this.tanHuaHanXun_niBanYiJian ? this.tanHuaHanXun_niBanYiJian : '',
+          time,
+          link: `/admin/petition/talk/show/${processInstanceId}/ShenPiChengPi`,
+          leaderType: '登记人'
+        }
+        //fileObj.tanHuaHanXun_chengPi_files = this.fileRef.state.fileList
+        yijianArr.push(obj)
+        arrObj.tanHuaHanXun_chengPi = yijianArr
+        //filesArr.push(fileObj)
+        tanHuaArr.push(arrObj)
+        values.tanHuaHanXun_yiJian = tanHuaArr
+        values.wenTiXianSuo_status = '谈话函询中'
+        //values.tanHuaHanXun_files = filesArr
+        post(
+          `thread/claimAndComplete?taskId=${taskid}&processInstanceId=${processInstanceId}&nextAssignee=${this.leader}&isLocal=${0}`,
+          values
+        ).then(res => {
+          this.$Message.info('提交成功')
+          this.$router.push({ path: '/admin/talk/list' })
+        })
+      }
     }
+  }
 </script>

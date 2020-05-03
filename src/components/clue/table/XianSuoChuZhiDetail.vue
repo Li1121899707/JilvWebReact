@@ -222,7 +222,7 @@ import {get} from '@/utils/http'
                 })
             },
             back(){
-                this.$router.push({ path: 'clue-clueList' })
+              this.$router.push({ path: '/admin/clue/disposal' })
             }
         },
         computed:{

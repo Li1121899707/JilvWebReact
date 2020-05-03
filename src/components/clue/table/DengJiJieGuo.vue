@@ -145,7 +145,7 @@ td{
 </template>
 <script>
 import GLOBAL from '@/components/common/GlobalConstant'
-import {get} from '@/utils/http'
+import {get,post,put} from '@/utils/http'
 import {concatForArr} from '@/utils/concat'
   export default {
     created(){

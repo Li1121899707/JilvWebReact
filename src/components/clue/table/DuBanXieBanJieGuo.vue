@@ -1,4 +1,4 @@
-// 问题线索 —— 问题线索登记表（督办协办结果） 4-29
+// 问题线索 —— 问题线索登记表（督办协办结果） 4-29 show/add 未动态显示
 
 <style scoped>
 table{
@@ -119,15 +119,18 @@ td{
             </tr>
           </tbody>
       </table>
+
       <FormItem prop="wenTiXianSuo_banLiJieGuo" label="办理结果" label-width="220">
         <Input type="textarea" v-model="formData.wenTiXianSuo_banLiJieGuo" style="width: 220px"/>
       </FormItem>
 
-      <FormItem prop="wenTiXianSuo_shenPiLingDao" label="批办领导" label-width="220">
-        <Select v-model="formData.wenTiXianSuo_shenPiLingDao" style="width:200px">
-          <Option v-for="item in leaderList" :value="item.userCode" :key="item.id">{{ item.userName }}</Option>
-        </Select>
-      </FormItem>
+      <div v-if="this.leaderList.length > 0">
+        <FormItem prop="wenTiXianSuo_shenPiLingDao" label="批办领导" label-width="220">
+          <Select v-model="formData.wenTiXianSuo_shenPiLingDao" style="width:200px">
+            <Option v-for="item in leaderList" :value="item.userCode" :key="item.id">{{ item.userName }}</Option>
+          </Select>
+        </FormItem>
+      </div>
     </Form>
     
     <Row style="padding-top:25px">
@@ -142,7 +145,7 @@ td{
 </template>
 <script>
 import GLOBAL from '@/components/common/GlobalConstant'
-import {get} from '@/utils/http'
+import {get,post} from '@/utils/http'
   export default {
     created(){
         this.load();

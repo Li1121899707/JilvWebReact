@@ -1,4 +1,4 @@
-// 问题线索 —— 信访件处理 —— 生成新线索
+// 问题线索 —— 信访件处理 —— 生成新线索 （未更正）
 
 <style scoped>
 table{
@@ -286,7 +286,7 @@ import {get,post,put} from '@/utils/http'
 
             },
             back(){
-                this.$router.push({ path: 'clue-letters' })
+                this.$router.push({ path: '/admin/clue/disposal' })
             },
             submit(){
               var url = 'activiti/startProcess?processDefinitionKey='+ GLOBAL.processDefinitionKey

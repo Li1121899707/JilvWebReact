@@ -115,7 +115,7 @@ td{
                   </td>
                   <td >出生年月</td>
                   <td colspan="2">
-                    <DatePicker v-model="wenTiXianSuo_beiFanYingRenBorn" type="date" style="width: 100%"></DatePicker>                  
+                    <DatePicker v-model="wenTiXianSuo_beiFanYingRenBorn" type="date" style="width: 100%"></DatePicker>
                   </td>
                 </tr>
 

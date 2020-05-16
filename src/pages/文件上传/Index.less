@@ -1,0 +1,121 @@
+.toggleBtn {
+  background-color: #fff;
+  text-align: right;
+  padding: 10px 30px 0 0;
+}
+.childMenuBox {
+  border-bottom: 1px #e8e8e8 dotted;
+  background-color: #fff;
+  margin: 0 0 0 0;
+  padding: 10px 30px 20px 30px;
+  .childMenu {
+    height: 42px;
+    line-height: 42px;
+    font-size: 14px;
+    border: solid #e8e8e8 1px;
+    border-radius: 4px;
+    margin: 0 0 6px 0;
+    padding: 0 0 0 20px;
+    cursor: pointer;
+  }
+  .active {
+    height: 42px;
+    line-height: 42px;
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    border-radius: 4px;
+    padding: 0 0 0 20px;
+    cursor: pointer;
+    // change
+    border: solid rgba(0, 164, 0, 0.6) 1px;
+    background-color: rgba(0, 165, 0, 0.1);
+  }
+}
+
+.content {
+  background-color: #fff;
+  padding: 25px 0 30px 25px;
+  margin: 0 0 0 0;
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+  }
+  .remarks {
+    color: #606c84;
+    font-size: 16px;
+  }
+  .submitDiv {
+    .submitBtn {
+      margin: 20px 0 20px 10px;
+    }
+  }
+  .isChangeDiv {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+  }
+  .table {
+    text-align: center;
+    border-collapse: collapse;
+    //border: 1px solid #000;
+    border: none;
+    font-size: 18px;
+    td {
+      padding: 10px;
+    }
+    tr,
+    th,
+    td {
+      border: 1px solid #000;
+    }
+    .label {
+      color: #606c84;
+    }
+    .val {
+      color: #000;
+      padding: 10px 2px;
+    }
+  }
+  :global(.ant-form-item) {
+    margin-bottom: 0;
+  }
+  :global(.ant-input) {
+    padding: 0;
+    font-size: 16px;
+  }
+}
+
+.ellipsis_col_200{
+  max-width: 200px;
+  text-overflow:ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ellipsis_col_250{
+  max-width: 250px;
+  text-overflow:ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ellipsis_col_300{
+  max-width: 300px;
+  text-overflow:ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ellipsis_col_400{
+  max-width: 400px;
+  text-overflow:ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ellipsis_col_500{
+  max-width: 500px;
+  text-overflow:ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.bold{
+  font-weight: bold;
+}

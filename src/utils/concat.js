@@ -32,6 +32,7 @@ export const concatForArr = (data = {}, arr = []) => {
 export const formatForXinFang = (data = {}, nameList = []) => {
   const dataList = []
   const name = []
+  const valueList = []
   for (let item of data) {
     nameList.map(itemList => {
       if (itemList.name === item.type) {
@@ -42,6 +43,7 @@ export const formatForXinFang = (data = {}, nameList = []) => {
   nameList.forEach(item => {
     name.push(item.name)
     dataList.push(item.value)
+    valueList.push({name:item.name,value:item.value})
   })
-  return { dataList, name }
+  return { dataList, name, valueList }
 }

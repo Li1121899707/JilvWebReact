@@ -7,8 +7,8 @@ const CancelToken = axios.CancelToken
 let CancelAxiosRequest
 // axios 配置
 axios.defaults.timeout = 30000 // 设置超时时间
-//axios.defaults.baseURL = `${window.server}/api/` // 这是调用数据接口
-axios.defaults.baseURL = 'http://localhost:8097/api/'
+axios.defaults.baseURL = `${window.server}/api/` // 这是调用数据接口
+// axios.defaults.baseURL = 'http://localhost:3000/api/'
 axios.interceptors.request.use(
   config => {
     //  config.data = JSON.stringify(config.data);

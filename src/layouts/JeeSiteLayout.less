@@ -1,0 +1,49 @@
+@headerHight: 76px;
+
+.header {
+  background-color: #3978e6;
+  height: @headerHight;
+  padding: 0;
+}
+
+.logo {
+  float: left;
+  width: 895px;
+  height: @headerHight;
+  background: url(../assets/logo.jpg) no-repeat center;
+  background-size: 100% 100%;
+}
+
+.title {
+  float: left;
+  font-size: 28px;
+  font-weight: bolder;
+  line-height: @headerHight;
+  margin: 0 0 1em 20px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    'Helvetica Neue', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  font-variant: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+.dropdown {
+  float: right;
+  margin-right: 30px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.ant-layout-sider {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-scroll-chaining: chained;
+  -ms-overflow-style: none;
+  -ms-content-zooming: zoom;
+  -ms-scroll-rails: none;
+  -ms-content-zoom-limit-min: 100%;
+  -ms-content-zoom-limit-max: 500%;
+  -ms-scroll-snap-type: proximity;
+  -ms-scroll-snap-points-x: snapList(100%, 200%, 300%, 400%, 500%);
+  -ms-overflow-style: none;
+  overflow: auto;
+}

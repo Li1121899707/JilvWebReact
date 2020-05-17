@@ -1,8 +1,3 @@
-/*
- * @author: 王志鹏
- * @Datetime  2020/2/19 17:05
- */
-
 import React, { Component } from 'react'
 import { Button, DatePicker, Form, Input, Timeline, Tabs, Select } from 'antd'
 import moment from 'moment'
@@ -47,7 +42,7 @@ class RegisterTableDetail extends Component {
     return (
       <div className={style.content}>
         <div className={style.content_box}>
-          <p className={style.title}>内蒙古自治区纪委监委驻自治区农信联社纪检监察组</p>
+          <p className={style.title}>中共内蒙古自治区农村信用社联合社检查委员会</p>
           <p className={style.title}>问题线索登记表</p>
           <p style={{ paddingLeft: '35%' }}>处理单序号：{dataSource.wenTiXianSuo_xuHao}</p>
           <Form>

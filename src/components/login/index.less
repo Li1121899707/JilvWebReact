@@ -3,28 +3,35 @@
   height: 100%;
   // background: url("../../assets/loginbg2.jpg") no-repeat center;
   background-size: 100% 100%;
+  
   overflow: hidden;
   min-width: 800px;
   .loginBox {
     // background: url("../../assets/loginbg1.png") no-repeat center;
     background-size: 100% 100%;
     width: 860px;
-    height: 384px;
-    margin: 200px auto 0 auto;
+    height: 450px;
+    margin: 0px auto 0 auto;
     position: relative;
+    background-color: #f0f8ff;
+
+    .title{
+      margin: 80px 0 60px 0;
+      text-align: center;
+      padding:80px 0 0 0;
+    }
 
     .content {
       width: 220px;
-      margin: 80px 0 0 550px;
+      margin: 0 0 0 320px;//(860-320)/2 = 320 ,与左侧边距，恰好居中
       text-align: center;
-      padding-top: 120px;
       input {
         text-align: left;
       }
     }
 
     .loginFormButton {
-      background-color: #d51a20;
+      background-color: #3978e6;
       border: none;
     }
   }

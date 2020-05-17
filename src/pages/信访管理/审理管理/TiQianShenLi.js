@@ -1,7 +1,3 @@
-/*
- * @author: bifan
- * @Datetime  2020/2/19 15:15
- */
 import React, { Component, Fragment } from 'react'
 import { Button, Form, Input, Select, notification, DatePicker, InputNumber, Upload } from 'antd'
 import moment from 'moment'

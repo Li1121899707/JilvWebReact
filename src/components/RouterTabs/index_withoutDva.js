@@ -42,10 +42,6 @@ class RouterTabs extends Component {
       refsTag: [], // tabs 所有页签
       searchMap: {}, // 每个 页签对应的路由参数  // 未实现
     };
-
-    //
-    // let re = pathToRegexp('/app/zigenianshen/:id', [], { end: true });
-    // console.log(re.exec('/app/zigenianshen/123'));
   }
 
   componentDidMount() {

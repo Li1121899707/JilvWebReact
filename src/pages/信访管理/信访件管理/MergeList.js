@@ -1,8 +1,3 @@
-/**
- * @Author 王舒宁
- * @Date 2020/3/15 21:19
- **/
-
 import React, { Component } from 'react'
 import { Form, Col, Row, Input, Select, DatePicker, Button, Alert, Divider, Table, Tag, notification, Popconfirm, Icon } from 'antd'
 import moment from 'moment'
@@ -25,6 +20,7 @@ class MergeList extends Component {
       dataSource: []
     }
     this.clueSource = [
+      '全部',
       '信访举报',
       '上级交办',
       '公检法机关移交',
@@ -35,9 +31,21 @@ class MergeList extends Component {
       '其他行政执法机关移交',
       '其他'
     ]
-    this.managementMode = ['自办', '转办', '交办', '督办', '协调']
-    this.problemType = ['政治纪律', '组织纪律', '廉洁纪律', '群众纪律', '工作纪律', '生活纪律']
-    this.managementStatus = ['已登记', '已填写拟办意见', '已审批', '已上会', '谈话函询中', '初步核实中', '审查调查中', '审理中', '已办结', '暂存待查']
+    this.managementMode = ['全部', '自办', '转办', '交办', '督办', '协调']
+    this.problemType = ['全部', '政治纪律', '组织纪律', '廉洁纪律', '群众纪律', '工作纪律', '生活纪律']
+    this.managementStatus = [
+      '全部',
+      '已登记',
+      '已填写拟办意见',
+      '已审批',
+      '已上会',
+      '谈话函询中',
+      '初步核实中',
+      '审查调查中',
+      '审理中',
+      '已办结',
+      '暂存待查'
+    ]
     this.problemType2 = [
       '全部',
       '1.自行其是，贯彻落实党的有关方针政策路线不力',
@@ -49,7 +57,6 @@ class MergeList extends Component {
     ]
     this.mode = this.props.match.params.type
     this.id = this.props.match.params.id
-    this.name = this.props.match.params.name
   }
 
   componentDidMount() {
@@ -61,6 +68,7 @@ class MergeList extends Component {
     let val = {}
     let search = ''
     this.props.form.validateFields((err, values) => {
+      console.log(values)
       //字符串拼接搜索条件  逗号拼接
       for (let item in values) {
         console.log(values[item])
@@ -82,7 +90,6 @@ class MergeList extends Component {
         }
       }
       search = search ? search.substring(1) : ''
-      search += `,wenTiXianSuo_beiFanYingRen=${this.name}`
       get(`activiti/process/instances/all?processDefinitionKey=${processDefinitionKey}&search=${search}`, {
         size: this.state.pagination.pageSize,
         page: 0,
@@ -109,7 +116,6 @@ class MergeList extends Component {
   }
 
   merge = processInstanceId => {
-    console.log(this.id,processInstanceId)
     let val = {
       petitionId: this.id,
       processInstanceId

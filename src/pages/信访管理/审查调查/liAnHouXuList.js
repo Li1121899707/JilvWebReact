@@ -1,8 +1,3 @@
-/**
- * @Author 王舒宁
- * @Date 2020/2/20 10:18
- **/
-
 import React, { Component } from 'react'
 import { Form, Col, Row, Input, Select, DatePicker, Button, Divider, Table, Tag, notification, Modal } from 'antd'
 import { router } from 'umi'

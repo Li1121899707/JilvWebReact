@@ -1,8 +1,3 @@
-/*
- * @author: 王志鹏
- * @Datetime  2020/2/19 15:23
- */
-
 import React, { Component } from 'react'
 import { Form, Input, Select, DatePicker, Upload, Button, notification, Timeline } from 'antd'
 import moment from 'moment'
@@ -11,7 +6,6 @@ import TableInput from '../common/TableInput'
 import { get, post } from '@/utils/http'
 import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
 import styles from '@/pages/信访管理/Index.less'
-import { router } from 'umi'
 
 const { Option } = Select
 
@@ -105,7 +99,6 @@ class LiaoJieTable extends Component {
         values
       ).then(res => {
         notification.success({ message: '提交成功' })
-        router.goBack()
       })
       // })
     })
@@ -126,7 +119,7 @@ class LiaoJieTable extends Component {
     return (
       <div className={style.content}>
         <div className={style.content_box}>
-          <p className={style.title}>内蒙古自治区纪委监委驻自治区农信联社纪检监察组</p>
+          <p className={style.title}>中共内蒙古自治区农村信用社联合社检查委员会</p>
           <p className={style.title}>了结呈批表</p>
           <Form>
             <table className={style.table}>

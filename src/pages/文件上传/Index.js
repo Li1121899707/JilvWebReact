@@ -13,8 +13,8 @@ import { Form, Tabs } from 'antd'
 import { get } from '@/utils/http'
 
 // import styles from './Index.less'
-import SearchForArchives from '@/pages/廉洁档案/SearchForArchives'
-import SearchForPerson from '@/pages/廉洁档案/SearchForPerson'
+import SearchForArchives from '@/pages/文件上传/SearchForArchives'
+import SearchForPerson from '@/pages/文件上传/SearchForPerson'
 import Breadcrumbs from '@/components/Breadcrumb'
 
 const { TabPane } = Tabs

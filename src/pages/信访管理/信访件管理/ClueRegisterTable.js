@@ -1,10 +1,6 @@
-/*
- * @author: 王志鹏
- * @Datetime  2020/2/20 8:58
- */
 import React, { Component } from 'react'
 import { router } from 'umi'
-import { Button, DatePicker, Form, Input, Select, Upload, notification, Icon } from 'antd'
+import { Button, DatePicker, Form, Input, Select, Upload, notification } from 'antd'
 import moment from 'moment'
 import style from '@/pages/信访管理/Index.less'
 import TableInput from '@/pages/信访管理/common/TableInput'
@@ -203,8 +199,7 @@ class RegisterTable extends Component {
         '其他行政执法机关移交',
         '其他'
       ],
-      secondList: [],
-      fenLeiList: [{}]
+      secondList: []
     }
     this.id = this.props.match.params.id
     this.type = this.props.match.params.type
@@ -244,11 +239,10 @@ class RegisterTable extends Component {
     get(`petitions/${this.id}`).then(res => {
       res.data.attachment = JSON.parse(res.data.attachment)
       res.data.recieveTime = res.data.recieveTime ? moment(res.data.recieveTime) : ''
-      this.setState({
-        dataSource: res.data,
-        fenLeiList: res.data.fenLeiList ? res.data.fenLeiList : [{}]
-      })
       this.props.form.setFieldsValue(res.data)
+      this.setState({
+        dataSource: res.data
+      })
     })
   }
 
@@ -311,7 +305,6 @@ class RegisterTable extends Component {
           }
           put(`petitions/mergeToClue`, { ...valId }).then(res => {})
           notification.success({ message: '提交成功' })
-          router.goBack()
         })
       })
     })
@@ -328,7 +321,6 @@ class RegisterTable extends Component {
       const taskId = this.state.data.historicUserTaskInstanceList[this.state.data.historicUserTaskInstanceList.length - 1].taskInstanceId
       post(`activiti/setProcessVariables/${this.id}`, { ...values }).then(res => {
         notification.success({ message: '提交成功' })
-        router.goBack()
       })
     })
   }
@@ -346,60 +338,7 @@ class RegisterTable extends Component {
 
   render() {
     const { getFieldDecorator, getFieldValue } = this.props.form
-    const { dataSource, fenLeiList, secondList } = this.state
-    const formItems = fenLeiList.map((item, index) => (
-      <div style={{ display: 'flex', marginTop: 20, alignItems: 'center' }}>
-        <TableInput data={dataSource.wenTiXianSuo_wenTiLeiXing}>
-          <Form.Item style={{ display: 'flex', marginRight: 10 }} label='检索反映问题类型'>
-            {getFieldDecorator(`fenLeiList[${index}].wenTiXianSuo_wenTiLeiXing`, {
-              rules: [{ required: true, message: '必填!' }]
-            })(
-              <Select
-                style={{ width: 120 }}
-                allowClear
-                onChange={e => {
-                  this.changeSecondList(e, index)
-                }}
-              >
-                {this.state.clueList.map((itemList, i) => {
-                  return (
-                    <Option key={i} value={itemList.id}>
-                      {itemList.name}
-                    </Option>
-                  )
-                })}
-              </Select>
-            )}
-          </Form.Item>
-        </TableInput>
-        <TableInput data={dataSource.wenTiXianSuo_wenTiErJiFenLei}>
-          <Form.Item style={{ display: 'flex' }} label='线索反映问题二级'>
-            {getFieldDecorator(`fenLeiList[${index}].wenTiXianSuo_wenTiErJiFenLei`)(
-              <Select style={{ width: 410 }} allowClear disabled={secondList[index] && this.state.secondList[index].length === 0}>
-                {this.state.secondList[index] &&
-                  this.state.secondList[index].map((itemList, i) => {
-                    return (
-                      <Option key={i} value={itemList.id}>
-                        {itemList.name}
-                      </Option>
-                    )
-                  })}
-              </Select>
-            )}
-          </Form.Item>
-        </TableInput>
-        {fenLeiList.length > 1 && this.mode !== 'show' ? (
-          <div style={{ verticalAlign: 'middle', border: 'none', textAlign: 'left', width: 18 }}>
-            <Icon className='dynamic-delete-button' type='minus-circle-o' onClick={() => this.remove(index)} />
-          </div>
-        ) : null}
-        {fenLeiList.length === index + 1 && this.mode !== 'show' ? (
-          <div style={{ verticalAlign: 'middle', border: 'none', textAlign: 'left' }}>
-            <Icon style={{ color: 'green' }} className='dynamic-delete-button' type='plus-circle-o' onClick={() => this.add(index)} />
-          </div>
-        ) : null}
-      </div>
-    ))
+    const { dataSource, leaderList } = this.state
 
     return (
       <div className={style.content}>
@@ -748,6 +687,14 @@ class RegisterTable extends Component {
                     </TableInput>
                   </td>
                 </tr>
+                {/*<tr>*/}
+                {/*  <td className={style.label}>收到时间</td>*/}
+                {/*  <td className={style.val} colSpan={5}>*/}
+                {/*    <TableInput data={dataSource.recieveTime}>*/}
+                {/*      <Form.Item>{getFieldDecorator('recieveTime')(<DatePicker style={{ width: '100%' }} />)}</Form.Item>*/}
+                {/*    </TableInput>*/}
+                {/*  </td>*/}
+                {/*</tr>*/}
                 <tr>
                   <td className={style.label}>内容摘要</td>
                   <td className={style.val} colSpan={5}>
@@ -774,7 +721,46 @@ class RegisterTable extends Component {
                 </tr>
               </tbody>
             </table>
-            {formItems}
+            <div style={{ display: 'flex', marginTop: 20 }}>
+              <TableInput data={dataSource.wenTiXianSuo_wenTiLeiXing}>
+                <Form.Item style={{ display: 'flex', marginRight: 10 }} label='检索反映问题类型'>
+                  {getFieldDecorator('wenTiXianSuo_wenTiLeiXing', {
+                    rules: [{ required: true, message: '必填!' }]
+                  })(
+                    <Select
+                      style={{ width: 120 }}
+                      allowClear
+                      onChange={e => {
+                        this.changeSecondList(e)
+                      }}
+                    >
+                      {this.state.clueList.map((item, index) => {
+                        return (
+                          <Option key={index} value={item.id}>
+                            {item.name}
+                          </Option>
+                        )
+                      })}
+                    </Select>
+                  )}
+                </Form.Item>
+              </TableInput>
+              <TableInput data={dataSource.wenTiXianSuo_wenTiErJiFenLei}>
+                <Form.Item style={{ display: 'flex' }} label='线索反映问题二级'>
+                  {getFieldDecorator('wenTiXianSuo_wenTiErJiFenLei')(
+                    <Select style={{ width: 410 }} allowClear disabled={this.state.secondList.length === 0}>
+                      {this.state.secondList.map((item, index) => {
+                        return (
+                          <Option key={index} value={item.id}>
+                            {item.name}
+                          </Option>
+                        )
+                      })}
+                    </Select>
+                  )}
+                </Form.Item>
+              </TableInput>
+            </div>
             <DisplayControlComponent>
               <div style={{ textAlign: 'left' }}>
                 <UploadComp

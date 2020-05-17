@@ -1,15 +1,9 @@
-/**
- * @Author 王舒宁
- * @Date 2020/2/20 12:39
- **/
-
 import React, { Component } from 'react'
 import { Form, Col, Row, Input, Select, DatePicker, Button, Divider, Table, Tag, notification, Modal } from 'antd'
 import moment from 'moment'
 import { router } from 'umi'
 import Breadcrumbs from '@/components/Breadcrumb'
 import { get, post } from '@/utils/http'
-import {exportFiles} from '@/utils/common'
 import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
 
 const { Option } = Select
@@ -296,7 +290,7 @@ class ClueDisposalList extends Component {
   exportFiles = () => {
     const keys = this.state.selectedRowKeys
     post('thread/exportMonthlyReport', keys).then(res => {
-      exportFiles(`${window.server}/api/thread/getMonthlyZip/${res.data}`, res.data)
+      window.location.href = `${window.server}/api/thread/getMonthlyZip/${res.data}`
     })
   }
 
@@ -304,7 +298,7 @@ class ClueDisposalList extends Component {
     const keys = []
     keys.push(id)
     post('thread/exportMonthlyReport', keys).then(res => {
-      exportFiles(`${window.server}/api/thread/getMonthlyZip/${res.data}`, res.data)
+      window.location.href = `${window.server}/api/thread/getMonthlyZip/${res.data}`
     })
   }
 

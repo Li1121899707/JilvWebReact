@@ -1,7 +1,3 @@
-/*
- * @author: 王志鹏
- * @Datetime  2020/2/20 15:41
- */
 import React, { Component } from 'react'
 import { Button, DatePicker, Form, Input, Select, Timeline, notification } from 'antd'
 import moment from 'moment'
@@ -9,7 +5,6 @@ import styles from '@/pages/信访管理/Index.less'
 import TableInput from '@/pages/信访管理/common/TableInput'
 import { get, post } from '@/utils/http'
 import ProcessDefinitionKey from '../common/aboutActiviti'
-import { router } from 'umi'
 
 const { Option } = Select
 
@@ -78,7 +73,6 @@ class DuBanXieBanJieGuoTable extends Component {
         val
       ).then(res => {
         notification.success({ message: '提交成功' })
-        router.goBack()
       })
     })
   }
@@ -98,7 +92,7 @@ class DuBanXieBanJieGuoTable extends Component {
     return (
       <div className={styles.content}>
         <div className={styles.content_box}>
-          <p className={styles.title}>内蒙古自治区纪委监委驻自治区农信联社纪检监察组</p>
+          <p className={styles.title}>中共内蒙古自治区农村信用社联合社检查委员会</p>
           <p className={styles.title}>问题线索登记表</p>
           <Form>
             <table className={styles.table}>

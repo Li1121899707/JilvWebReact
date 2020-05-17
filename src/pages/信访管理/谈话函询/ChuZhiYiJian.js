@@ -1,7 +1,3 @@
-/*
- * @author: bifan
- * @Datetime  2020/2/19 15:15
- */
 import React, { Component } from 'react'
 import { Button, Form, Input, Select, notification, Divider, DatePicker, Tabs, Timeline } from 'antd'
 import { Link, router } from 'umi'

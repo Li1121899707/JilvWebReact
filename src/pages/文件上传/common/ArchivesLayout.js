@@ -10,7 +10,7 @@
 import React, { Component } from 'react'
 import { Button } from 'antd'
 import 'moment/locale/zh-cn'
-import Nav from '@/pages/廉洁档案/common/Nav'
+import Nav from '@/pages/文件上传/common/Nav'
 import { get, post } from '@/utils/http'
 import {exportFiles} from "@/utils/common";
 

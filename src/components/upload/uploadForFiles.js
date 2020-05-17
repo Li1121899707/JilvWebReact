@@ -1,8 +1,3 @@
-/*
- * @author: 王志鹏
- * @Datetime  2020/1/17 14:32
- */
-
 import React, { Component } from 'react'
 import { Button, Icon, Upload, Modal, notification } from 'antd'
 import PropTypes from 'prop-types'

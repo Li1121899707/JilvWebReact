@@ -1,8 +1,3 @@
-/**
- * @Author 王舒宁
- * @Date 2020/2/20 14:52
- **/
-
 import { router } from 'umi'
 import React, { Component, Fragment } from 'react'
 import { Form, Col, Row, Popconfirm, Button, notification, Table, Tabs, Tag, Modal } from 'antd'

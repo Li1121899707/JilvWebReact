@@ -30,6 +30,9 @@ class Login extends Component {
     return (
       <div className={style.Login}>
         <div className={style.loginBox}>
+          <div className={style.title}>
+            <h1>纪检监察系统登录</h1>
+          </div>
           <div className={style.content}>
             <Form onSubmit={this.handleSubmit} className='login-form'>
               <FormItem>

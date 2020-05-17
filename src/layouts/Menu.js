@@ -1,11 +1,3 @@
-/*
- * @Author: lixiang
- * @Email: 619419059@qq.com
- * @Date: 2019-08-27 11:50:25
- * @Last Modified by: lixiang
- * @Last Modified time: 2019-08-28 15:54:09
- * @Description: Description
- */
 import React, { Component } from 'react'
 import { Menu, Icon } from 'antd'
 import Link from 'umi/link'

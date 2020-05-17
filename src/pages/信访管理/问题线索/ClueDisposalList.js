@@ -1,15 +1,9 @@
-/**
- * @Author 王舒宁
- * @Date 2020/2/20 12:39
- **/
-
 import React, { Component } from 'react'
 import { Form, Col, Row, Input, Select, DatePicker, Button, Divider, Table, Tag, notification, Modal } from 'antd'
 import moment from 'moment'
 import { router } from 'umi'
 import Breadcrumbs from '@/components/Breadcrumb'
 import { get, post } from '@/utils/http'
-import {exportFiles} from '@/utils/common'
 import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
 
 const { Option } = Select
@@ -525,7 +519,8 @@ class ClueDisposalList extends Component {
     } else {
       for (let i = 0; i < keys.length; i += 1) {
         post(`dossier/exportCluePdf?processInstanceId=${keys[i]}&type=问题线索登记表`).then(res => {
-          exportFiles(`${window.server}/api/dossier/getPdf/${res.data}`, res.data)
+          // console.log(res.data)
+          window.location.href = `${window.server}/api/dossier/getPdf/${res.data}`
         })
       }
     }

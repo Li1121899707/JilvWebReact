@@ -1,7 +1,3 @@
-/*
- * @author: 王志鹏
- * @Datetime  2020/2/20 15:11
- */
 import React, { Component } from 'react'
 import { Button, Form, Input, Select, DatePicker, Upload, notification, Radio } from 'antd'
 import { router } from 'umi'
@@ -12,7 +8,6 @@ import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
 import { get, post } from '@/utils/http'
 import DisplayControlComponent from '@/pages/信访管理/common/DisplayControlComponent'
 import UploadComp from '@/components/upload/Upload'
-import { exportFiles } from '@/utils/common'
 
 const { Option } = Select
 
@@ -42,11 +37,11 @@ class XianSuoChuZhiTable extends Component {
 
   componentDidMount() {
     this.fetch()
+    this.huoquhouxunaren()
   }
 
   fetch = () => {
     get(`activiti/process/instance?processInstanceId=${this.id}`).then(res => {
-      this.huoquhouxunaren()
       this.setState({
         dataSource: res.data.form,
         data: res.data
@@ -133,7 +128,7 @@ class XianSuoChuZhiTable extends Component {
     return (
       <div className={styles.content}>
         <div className={styles.content_box}>
-          <p className={styles.title}>内蒙古自治区纪委监委驻自治区农信联社纪检监察组</p>
+          <p className={styles.title}>中共内蒙古自治区农村信用社联合社检查委员会</p>
           <p className={styles.title}>问题线索登记表</p>
           <Form>
             <table className={styles.table}>
@@ -231,12 +226,7 @@ class XianSuoChuZhiTable extends Component {
               相关附件:
               {dataSource.wenTiXianSuo_files &&
                 dataSource.wenTiXianSuo_files.map(item => (
-                  <a
-                    target='_blank'
-                    onClick={() => {
-                      exportFiles(`${window.server}/api/files/${item.response.path}`, item.response.path)
-                    }}
-                  >
+                  <a target='_blank' href={`${window.server}/api/files/${item.response.path}`}>
                     {item.response.fileName}&emsp;
                   </a>
                 ))}
@@ -252,23 +242,71 @@ class XianSuoChuZhiTable extends Component {
                 />
               </div>
             </DisplayControlComponent>
-
-            <div>
-              <TableInput data={dataSource.wenTiXianSuo_chuZhiFangShi}>
-                <Form.Item style={{ marginTop: 10, display: 'flex' }} label='处置方式：'>
-                  {getFieldDecorator('wenTiXianSuo_chuZhiFangShi', {
+            <div style={{ display: 'flex' }}>
+              <TableInput data={dataSource.wenTiXianSuo_chuLiFangShi}>
+                <Form.Item style={{ display: 'flex', marginRight: 10 }} label='办理方式'>
+                  {getFieldDecorator('wenTiXianSuo_chuLiFangShi', {
                     rules: [{ required: true, message: '必填!' }]
                   })(
-                    <Select allowClear style={{ width: 200 }}>
-                      <Option value='谈话函询'>谈话函询</Option>
-                      <Option value='初步核实'>初步核实</Option>
-                      <Option value='暂存待查'>暂存待查</Option>
-                      <Option value='予以了结'>予以了结</Option>
-                    </Select>
+                    <Radio.Group onChange={this.onChange}>
+                      <Radio value='自办'>自办</Radio>
+                      <Radio value='转办'>转办</Radio>
+                      <Radio value='交办'>交办</Radio>
+                      <Radio value='督办'>督办</Radio>
+                      <Radio value='协办'>协办</Radio>
+                    </Radio.Group>
                   )}
                 </Form.Item>
               </TableInput>
             </div>
+            {this.state.value === '自办' ? (
+              <div>
+                <TableInput data={dataSource.wenTiXianSuo_chuZhiFangShi}>
+                  <Form.Item style={{ marginTop: 10, display: 'flex' }} label='处置方式：'>
+                    {getFieldDecorator('wenTiXianSuo_chuZhiFangShi', {
+                      rules: [{ required: true, message: '必填!' }]
+                    })(
+                      <Select allowClear style={{ width: 200 }}>
+                        <Option value='谈话函询'>谈话函询</Option>
+                        <Option value='初步核实'>初步核实</Option>
+                        <Option value='暂存待查'>暂存待查</Option>
+                        <Option value='予以了结'>予以了结</Option>
+                      </Select>
+                    )}
+                  </Form.Item>
+                </TableInput>
+              </div>
+            ) : null}
+
+            {this.state.value !== '自办' && this.state.value !== '' ? (
+              <div style={{ display: 'flex' }}>
+                <TableInput data={dataSource.wenTiXianSuo_chuLiFangShi_buMen}>
+                  <Form.Item style={{ display: 'flex', marginRight: 10 }} label='转办/交办/督办/协调部门'>
+                    {getFieldDecorator('wenTiXianSuo_chuLiFangShi_buMen', {
+                      rules: [{ required: true, message: '必填!' }]
+                    })(<Input />)}
+                  </Form.Item>
+                </TableInput>
+              </div>
+            ) : null}
+            {this.state.value === '督办' || (this.state.value === '协办' && this.state.value !== '') ? (
+              <div>
+                <TableInput data={dataSource.wenTiXianSuo_chuLiFangShi_neiRong}>
+                  <Form.Item style={{ display: 'flex' }} label='督办/协调工作内容：'>
+                    {getFieldDecorator('wenTiXianSuo_chuLiFangShi_neiRong', {
+                      rules: [{ required: true, message: '必填!' }]
+                    })(<Input.TextArea style={{ width: 787, minHeight: 300, marginBottom: 20 }} />)}
+                  </Form.Item>
+                </TableInput>
+                <TableInput data={dataSource.wenTiXianSuo_chuLiFangShi_shiJian}>
+                  <Form.Item style={{ display: 'flex', marginBottom: 20 }} label='督办/协调工作时间点:'>
+                    {getFieldDecorator('wenTiXianSuo_chuLiFangShi_shiJian', {
+                      rules: [{ required: true, message: '必填!' }]
+                    })(<DatePicker />)}
+                  </Form.Item>
+                </TableInput>
+              </div>
+            ) : null}
 
             <div>
               <TableInput data={dataSource.wenTiXianSuo_shenPiLingDao}>

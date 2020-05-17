@@ -15,12 +15,7 @@ export default [
     routes: [
       {
         path: '/admin',
-        redirect: '/admin/index'
-      },
-      {
-        path: '/admin/index',
-        name: '首页',
-        component: './admin/index'
+        redirect: '/admin/letters'
       },
       {
         path: '/admin/letters',

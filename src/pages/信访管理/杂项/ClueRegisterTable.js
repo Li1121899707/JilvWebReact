@@ -1,10 +1,14 @@
+/*
+ * @author: 王志鹏
+ * @Datetime  2020/2/20 8:58
+ */
 import React, { Component } from 'react'
 import { router } from 'umi'
-import { Button, DatePicker, Form, Input, Select, Upload, notification } from 'antd'
+import { Button, DatePicker, Form, Input, Select, Upload, notification, Icon } from 'antd'
 import moment from 'moment'
 import style from '@/pages/信访管理/Index.less'
 import TableInput from '@/pages/信访管理/common/TableInput'
-import { get, post } from '@/utils/http'
+import { get, post, put } from '@/utils/http'
 import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
 import DisplayControlComponent from '@/pages/信访管理/common/DisplayControlComponent'
 import UploadComp from '@/components/upload/Upload'
@@ -199,106 +203,132 @@ class RegisterTable extends Component {
         '其他行政执法机关移交',
         '其他'
       ],
-      secondList: []
+      secondList: [],
+      fenLeiList: [{}]
     }
     this.id = this.props.match.params.id
     this.type = this.props.match.params.type
+    this.fanYingRen = ['自治区联社机关干部', '基层行社一把手', '基层行社其他班子成员', '基层行社环节干部', '基层行社其他人员', '单位']
+    this.laiXin = [
+      '呼和浩特市',
+      '赤峰市',
+      '呼伦贝尔市',
+      '兴安盟',
+      '通辽市',
+      '乌兰察布市',
+      '锡林郭勒盟',
+      '包头市',
+      '巴彦淖尔市',
+      '阿拉善盟',
+      '鄂尔多斯市',
+      '乌海市'
+    ]
+    this.contextType = [
+      `违规发放贷款以贷谋私`,
+      '违规招录和提拔人员',
+      '经商办企业',
+      '违规基建',
+      '违规装修房屋',
+      '大宗物品采购',
+      '工作作风问题',
+      '诉求类',
+      '其他违反八项规定精神的问题'
+    ]
   }
 
   componentDidMount() {
-    if (this.id !== undefined) {
-      this.fetch()
-    }
+    this.fetch()
   }
 
   fetch = () => {
-    let processDefinitionKey = ProcessDefinitionKey
-    let taskId
-    get(`activiti/process/instance?processInstanceId=${this.id}`).then(res => {
-      res.data.form.wenTiXianSuo_shouDaoShiJian = res.data.form.wenTiXianSuo_shouDaoShiJian ? moment(res.data.form.wenTiXianSuo_shouDaoShiJian) : null
-      res.data.form.wenTiXianSuo_beiFanYingRenRuDangShiJian = res.data.form.wenTiXianSuo_beiFanYingRenRuDangShiJian
-        ? moment(res.data.form.wenTiXianSuo_beiFanYingRenRuDangShiJian)
-        : null
-      res.data.form.wenTiXianSuo_beiFanYingRenCanJiaGongZuoShiJian = res.data.form.wenTiXianSuo_beiFanYingRenCanJiaGongZuoShiJian
-        ? moment(res.data.form.wenTiXianSuo_beiFanYingRenCanJiaGongZuoShiJian)
-        : null
-      res.data.form.wenTiXianSuo_beiFanYingRenRenXianZhiShiJian = res.data.form.wenTiXianSuo_beiFanYingRenRenXianZhiShiJian
-        ? moment(res.data.form.wenTiXianSuo_beiFanYingRenRenXianZhiShiJian)
-        : null
-      res.data.form.wenTiXianSuo_beiFanYingRenBorn = res.data.form.wenTiXianSuo_beiFanYingRenBorn
-        ? moment(res.data.form.wenTiXianSuo_beiFanYingRenBorn)
-        : null
-      res.data.form.wenTiXianSuo_xianSuoLaiYuan =
-        typeof res.data.form.wenTiXianSuo_xianSuoLaiYuan === 'string' ? res.data.form.wenTiXianSuo_xianSuoLaiYuan.split(';') : null
-      this.props.form.setFieldsValue(res.data.form)
+    get(`petitions/${this.id}`).then(res => {
+      res.data.attachment = JSON.parse(res.data.attachment)
+      res.data.recieveTime = res.data.recieveTime ? moment(res.data.recieveTime) : ''
       this.setState({
-        dataSource: res.data.form,
-        data: res.data
+        dataSource: res.data,
+        fenLeiList: res.data.fenLeiList ? res.data.fenLeiList : [{}]
       })
+      this.props.form.setFieldsValue(res.data)
     })
   }
 
   submit = () => {
     let processDefinitionKey = ProcessDefinitionKey
-
+    let val = {}
     this.props.form.validateFields((err, values) => {
       if (err) return false
-      values.wenTiXianSuo_dengJiTime = new Date()
-      values.wenTiXianSuo_status = '未登记'
-      // wenTiXianSuo_biaoZhi、shenChaDiaoCha_status 调试使用  后期删除
-      // values.wenTiXianSuo_biaoZhi = '立案审查'
-      // values.shenChaDiaoCha_status = '未登记'
-      //   status 调试结束需改回问题线索
-      console.log(values.wenTiXianSuo_xianSuoLaiYuan)
-      if (typeof values.wenTiXianSuo_xianSuoLaiYuan === 'string') {
+      val.wenTiXianSuo_dengJiTime = new Date()
+      val.wenTiXianSuo_status = '未登记'
+      val.status = '问题线索' //问题线索
+      val.flow_path = '问题线索'
+      val.wenTiXianSuo_files = this.fileRef.state.fileList
+      val.wenTiXianSuo_xianSuoLaiYuan = values.source
+      val.wenTiXianSuo_fanYingRen = values.reporter
+      val.wenTiXianSuo_fanYingRenDanWei = values.reporterUnit
+      val.wenTiXianSuo_fanYingRenZhiWu = values.reporterPost
+      val.wenTiXianSuo_beiFanYingRen = values.informee
+      val.wenTiXianSuo_beiFanYingRenDanWei = values.informeeUnit
+      val.wenTiXianSuo_beiFanYingRenZhiWu = values.informeePost
+      val.wenTiXianSuo_shouDaoShiJian = values.recieveTime
+      val.wenTiXianSuo_neiRongZhaiYao = values.content
+      val.wenTiXianSuo_fanYingZhuYaoWenTi = values.wenTiXianSuo_fanYingZhuYaoWenTi
+      val.wenTiXianSuo_zhengZhiMianMao = values.wenTiXianSuo_zhengZhiMianMao
+      val.wenTiXianSuo_dianHua = values.wenTiXianSuo_dianHua
+      val.wenTiXianSuo_diZhi = values.wenTiXianSuo_diZhi
+      val.wenTiXianSuo_wenTiLeiXing = values.wenTiXianSuo_wenTiLeiXing
+      val.wenTiXianSuo_wenTiErJiFenLei = values.wenTiXianSuo_wenTiErJiFenLei
+      val.wenTiXianSuo_sourceCity = values.sourceCity
+      val.resultClass = values.resultClass
+      val.contentClass = values.contentClass
+      val.wenTiXianSuo_beiFanYingRenZhengZhiMianMao = values.wenTiXianSuo_beiFanYingRenZhengZhiMianMao
+      val.wenTiXianSuo_beiFanYingRenNianLing = values.wenTiXianSuo_beiFanYingRenNianLing
+      val.wenTiXianSuo_beiFanYingRenXingBie = values.wenTiXianSuo_beiFanYingRenXingBie
+      val.wenTiXianSuo_beiFanYingRenMinZu = values.wenTiXianSuo_beiFanYingRenMinZu
+      val.wenTiXianSuo_beiFanYingRenIsRenDaDaiBiao = values.wenTiXianSuo_beiFanYingRenIsRenDaDaiBiao
+      val.wenTiXianSuo_beiFanYingRenBorn = values.wenTiXianSuo_beiFanYingRenBorn
+      val.wenTiXianSuo_beiFanYingRenRuDangShiJian = values.wenTiXianSuo_beiFanYingRenRuDangShiJian
+      val.wenTiXianSuo_beiFanYingRenCanJiaGongZuoShiJian = values.wenTiXianSuo_beiFanYingRenCanJiaGongZuoShiJian
+      val.wenTiXianSuo_beiFanYingRenRenXianZhiShiJian = values.wenTiXianSuo_beiFanYingRenRenXianZhiShiJian
+      console.log(values.source)
+      if (typeof values.source === 'string') {
         values.wenTiXianSuo_xianSuoLaiYuan = values.source
       } else {
         values.wenTiXianSuo_xianSuoLaiYuan = values.source.join(';')
       }
-      values.status = '问题线索' //问题线索
-      values.flow_path = '问题线索'
-      values.wenTiXianSuo_files = this.fileRef.state.fileList
-      values.anJuan.chengXu = []
-      values.anJuan.zhuTi = []
-      values.anJuan.caiLiao = []
-      // console.log(values)
+      const anJuan = {}
+      anJuan.name = values.anJuanTiMing
+      val.anJuan = anJuan
+      val.isXinFang = true
       // 开始流程接口
-      post(`activiti/startProcess?processDefinitionKey=${processDefinitionKey}`, { ...values }).then(res => {
+      post(`activiti/startProcess?processDefinitionKey=${processDefinitionKey}`).then(res => {
         const taskid = res.data.historicUserTaskInstanceList[res.data.historicUserTaskInstanceList.length - 1].taskInstanceId
+        const processInstanceId = res.data.processInstanceId
         //完成任务
-        post(`activiti/completeTask?taskId=${taskid}`, values).then(res => {
+        post(`activiti/completeTask?taskId=${taskid}`, val).then(res => {
+          let valId = {
+            petitionId: this.id,
+            processInstanceId
+          }
+          put(`petitions/mergeToClue`, { ...valId }).then(res => {})
           notification.success({ message: '提交成功' })
           router.goBack()
-          sessionStorage.setItem('locked', JSON.stringify(true))
         })
       })
     })
   }
 
   updateSubmit = () => {
-    console.log(111)
     this.props.form.validateFields((err, values) => {
       if (err) return false
       values.wenTiXianSuo_upDateTime = new Date()
-      const arr = []
-      if (typeof values.wenTiXianSuo_xianSuoLaiYuan === 'string') {
-        // arr.push(values.wenTiXianSuo_xianSuoLaiYuan)
-        values.wenTiXianSuo_xianSuoLaiYuan = values.wenTiXianSuo_xianSuoLaiYuan
-      } else {
-        values.wenTiXianSuo_xianSuoLaiYuan = values.wenTiXianSuo_xianSuoLaiYuan.join(';')
-      }
-      // console.log(values.wenTiXianSuo_xianSuoLaiYuan)
-      // values.wenTiXianSuo_xianSuoLaiYuan = values.wenTiXianSuo_xianSuoLaiYuan ? values.wenTiXianSuo_xianSuoLaiYuan.join(';') : null
       values.wenTiXianSuo_status = '未登记'
       values.status = '问题线索' //问题线索
       values.flow_path = '问题线索'
       values.wenTiXianSuo_files = this.fileRef.state.fileList
-      values.anJuan.chengXu = []
-      values.anJuan.zhuTi = []
-      values.anJuan.caiLiao = []
       const taskId = this.state.data.historicUserTaskInstanceList[this.state.data.historicUserTaskInstanceList.length - 1].taskInstanceId
       post(`activiti/setProcessVariables/${this.id}`, { ...values }).then(res => {
         notification.success({ message: '提交成功' })
+        router.goBack()
       })
     })
   }
@@ -316,8 +346,60 @@ class RegisterTable extends Component {
 
   render() {
     const { getFieldDecorator, getFieldValue } = this.props.form
-    const { dataSource, leaderList } = this.state
-    console.log(dataSource.wenTiXianSuo_files)
+    const { dataSource, fenLeiList, secondList } = this.state
+    const formItems = fenLeiList.map((item, index) => (
+      <div style={{ display: 'flex', marginTop: 20, alignItems: 'center' }}>
+        <TableInput data={dataSource.wenTiXianSuo_wenTiLeiXing}>
+          <Form.Item style={{ display: 'flex', marginRight: 10 }} label='检索反映问题类型'>
+            {getFieldDecorator(`fenLeiList[${index}].wenTiXianSuo_wenTiLeiXing`, {
+              rules: [{ required: true, message: '必填!' }]
+            })(
+              <Select
+                style={{ width: 120 }}
+                allowClear
+                onChange={e => {
+                  this.changeSecondList(e, index)
+                }}
+              >
+                {this.state.clueList.map((itemList, i) => {
+                  return (
+                    <Option key={i} value={itemList.id}>
+                      {itemList.name}
+                    </Option>
+                  )
+                })}
+              </Select>
+            )}
+          </Form.Item>
+        </TableInput>
+        <TableInput data={dataSource.wenTiXianSuo_wenTiErJiFenLei}>
+          <Form.Item style={{ display: 'flex' }} label='线索反映问题二级'>
+            {getFieldDecorator(`fenLeiList[${index}].wenTiXianSuo_wenTiErJiFenLei`)(
+              <Select style={{ width: 410 }} allowClear disabled={secondList[index] && this.state.secondList[index].length === 0}>
+                {this.state.secondList[index] &&
+                  this.state.secondList[index].map((itemList, i) => {
+                    return (
+                      <Option key={i} value={itemList.id}>
+                        {itemList.name}
+                      </Option>
+                    )
+                  })}
+              </Select>
+            )}
+          </Form.Item>
+        </TableInput>
+        {fenLeiList.length > 1 && this.mode !== 'show' ? (
+          <div style={{ verticalAlign: 'middle', border: 'none', textAlign: 'left', width: 18 }}>
+            <Icon className='dynamic-delete-button' type='minus-circle-o' onClick={() => this.remove(index)} />
+          </div>
+        ) : null}
+        {fenLeiList.length === index + 1 && this.mode !== 'show' ? (
+          <div style={{ verticalAlign: 'middle', border: 'none', textAlign: 'left' }}>
+            <Icon style={{ color: 'green' }} className='dynamic-delete-button' type='plus-circle-o' onClick={() => this.add(index)} />
+          </div>
+        ) : null}
+      </div>
+    ))
 
     return (
       <div className={style.content}>
@@ -330,10 +412,10 @@ class RegisterTable extends Component {
               <tbody>
                 <tr>
                   <td className={style.label}>线索来源</td>
-                  <td className={style.val} colSpan={7}>
-                    <TableInput data={dataSource.wenTiXianSuo_xianSuoLaiYuan}>
+                  <td className={style.val} colSpan={5}>
+                    <TableInput data={dataSource.source}>
                       <Form.Item>
-                        {getFieldDecorator('wenTiXianSuo_xianSuoLaiYuan', {
+                        {getFieldDecorator('source', {
                           rules: [{ required: true, message: '必填!' }]
                         })(
                           <Select style={{ width: '100%' }} mode='multiple'>
@@ -353,9 +435,9 @@ class RegisterTable extends Component {
                 <tr>
                   <td className={style.label}>反映人</td>
                   <td className={style.val}>
-                    <TableInput data={dataSource.wenTiXianSuo_fanYingRen}>
+                    <TableInput data={dataSource.reporter}>
                       <Form.Item>
-                        {getFieldDecorator('wenTiXianSuo_fanYingRen', {
+                        {getFieldDecorator('reporter', {
                           rules: [{ required: true, message: '必填!' }]
                         })(<Input />)}
                       </Form.Item>
@@ -363,9 +445,9 @@ class RegisterTable extends Component {
                   </td>
                   <td className={style.label}>单位</td>
                   <td className={style.val}>
-                    <TableInput data={dataSource.wenTiXianSuo_fanYingRenDanWei}>
+                    <TableInput data={dataSource.reporterUnit}>
                       <Form.Item>
-                        {getFieldDecorator('wenTiXianSuo_fanYingRenDanWei', {
+                        {getFieldDecorator('reporterUnit', {
                           rules: [{ required: true, message: '必填!' }]
                         })(<Input />)}
                       </Form.Item>
@@ -373,26 +455,11 @@ class RegisterTable extends Component {
                   </td>
                   <td className={style.label}>职务</td>
                   <td className={style.val}>
-                    <TableInput data={dataSource.wenTiXianSuo_fanYingRenZhiWu}>
+                    <TableInput data={dataSource.reporterPost}>
                       <Form.Item>
-                        {getFieldDecorator('wenTiXianSuo_fanYingRenZhiWu', {
+                        {getFieldDecorator('reporterPost', {
                           rules: [{ required: true, message: '必填!' }]
                         })(<Input />)}
-                      </Form.Item>
-                    </TableInput>
-                  </td>
-                  <td className={style.label}>性别</td>
-                  <td className={style.val}>
-                    <TableInput data={dataSource.wenTiXianSuo_xingBie}>
-                      <Form.Item>
-                        {getFieldDecorator('wenTiXianSuo_xingBie', {
-                          rules: [{ required: true, message: '必填!' }]
-                        })(
-                          <Select>
-                            <Option value='男'>男</Option>
-                            <Option value='女'>女</Option>
-                          </Select>
-                        )}
                       </Form.Item>
                     </TableInput>
                   </td>
@@ -409,7 +476,7 @@ class RegisterTable extends Component {
                     </TableInput>
                   </td>
                   <td className={style.label}>联系电话</td>
-                  <td className={style.val} colSpan={2}>
+                  <td className={style.val}>
                     <TableInput data={dataSource.wenTiXianSuo_dianHua}>
                       <Form.Item>
                         {getFieldDecorator('wenTiXianSuo_dianHua', {
@@ -419,7 +486,7 @@ class RegisterTable extends Component {
                     </TableInput>
                   </td>
                   <td className={style.label}>通信地址</td>
-                  <td className={style.val} colSpan={2}>
+                  <td className={style.val}>
                     <TableInput data={dataSource.wenTiXianSuo_diZhi}>
                       <Form.Item>
                         {getFieldDecorator('wenTiXianSuo_diZhi', {
@@ -432,29 +499,29 @@ class RegisterTable extends Component {
                 <tr>
                   <td className={style.label}>被反映人</td>
                   <td className={style.val}>
-                    <TableInput data={dataSource.wenTiXianSuo_beiFanYingRen}>
+                    <TableInput data={dataSource.informee}>
                       <Form.Item>
-                        {getFieldDecorator('wenTiXianSuo_beiFanYingRen', {
+                        {getFieldDecorator('informee', {
                           rules: [{ required: true, message: '必填!' }]
                         })(<Input />)}
                       </Form.Item>
                     </TableInput>
                   </td>
                   <td className={style.label}>单位</td>
-                  <td className={style.val} colSpan={2}>
-                    <TableInput data={dataSource.wenTiXianSuo_beiFanYingRenDanWei}>
+                  <td className={style.val}>
+                    <TableInput data={dataSource.informeeUnit}>
                       <Form.Item>
-                        {getFieldDecorator('wenTiXianSuo_beiFanYingRenDanWei', {
+                        {getFieldDecorator('informeeUnit', {
                           rules: [{ required: true, message: '必填!' }]
                         })(<Input />)}
                       </Form.Item>
                     </TableInput>
                   </td>
                   <td className={style.label}>职务</td>
-                  <td className={style.val} colSpan={2}>
-                    <TableInput data={dataSource.wenTiXianSuo_beiFanYingRenZhiWu}>
+                  <td className={style.val}>
+                    <TableInput data={dataSource.informeePost}>
                       <Form.Item>
-                        {getFieldDecorator('wenTiXianSuo_beiFanYingRenZhiWu', {
+                        {getFieldDecorator('informeePost', {
                           rules: [{ required: true, message: '必填!' }]
                         })(<Input />)}
                       </Form.Item>
@@ -473,7 +540,7 @@ class RegisterTable extends Component {
                     </TableInput>
                   </td>
                   <td className={style.label}>年龄</td>
-                  <td className={style.val} colSpan={2}>
+                  <td className={style.val}>
                     <TableInput data={dataSource.wenTiXianSuo_beiFanYingRenNianLing}>
                       <Form.Item>
                         {getFieldDecorator('wenTiXianSuo_beiFanYingRenNianLing', {
@@ -483,7 +550,7 @@ class RegisterTable extends Component {
                     </TableInput>
                   </td>
                   <td className={style.label}>性别</td>
-                  <td className={style.val} colSpan={2}>
+                  <td className={style.val}>
                     <TableInput data={dataSource.wenTiXianSuo_beiFanYingRenXingBie}>
                       <Form.Item>
                         {getFieldDecorator('wenTiXianSuo_beiFanYingRenXingBie', {
@@ -510,7 +577,7 @@ class RegisterTable extends Component {
                     </TableInput>
                   </td>
                   <td className={style.label}>是否人大代表/政协委员</td>
-                  <td className={style.val} colSpan={2}>
+                  <td className={style.val}>
                     <TableInput data={dataSource.wenTiXianSuo_beiFanYingRenIsRenDaDaiBiao}>
                       <Form.Item>
                         {getFieldDecorator('wenTiXianSuo_beiFanYingRenIsRenDaDaiBiao', {
@@ -525,13 +592,16 @@ class RegisterTable extends Component {
                     </TableInput>
                   </td>
                   <td className={style.label}>出生年月</td>
-                  <td className={style.val} colSpan={2}>
+                  <td className={style.val}>
                     <TableInput
                       data={dataSource.wenTiXianSuo_beiFanYingRenBorn ? moment(dataSource.wenTiXianSuo_beiFanYingRenBorn).format('YYYY-MM-DD') : ''}
                     >
                       <Form.Item>
                         {getFieldDecorator('wenTiXianSuo_beiFanYingRenBorn', {
-                          rules: [{ required: true, message: '必填!' }]
+                          rules: [{ required: true, message: '必填!' }],
+                          initialValue: this.state.wenTiXianSuo_beiFanYingRenBorn
+                            ? moment(moment(this.state.dataSource.wenTiXianSuo_beiFanYingRenBorn).format('YYYY-MM-DD'), 'YYYY/MM/DD')
+                            : ''
                         })(<DatePicker style={{ width: '100%' }} />)}
                       </Form.Item>
                     </TableInput>
@@ -549,19 +619,23 @@ class RegisterTable extends Component {
                     >
                       <Form.Item>
                         {getFieldDecorator('wenTiXianSuo_beiFanYingRenRuDangShiJian', {
-                          rules: [{ required: true, message: '必填!' }]
+                          rules: [{ required: true, message: '必填!' }],
+                          initialValue: this.state.dataSource.wenTiXianSuo_beiFanYingRenRuDangShiJian
+                            ? moment(moment(this.state.dataSource.wenTiXianSuo_beiFanYingRenRuDangShiJian).format('YYYY-MM-DD'), 'YYYY/MM/DD')
+                            : ''
                         })(<DatePicker style={{ width: '100%' }} />)}
                       </Form.Item>
                     </TableInput>
                   </td>
                   <td className={style.label}>收到时间</td>
-                  <td className={style.val} colSpan={5}>
-                    <TableInput
-                      data={dataSource.wenTiXianSuo_shouDaoShiJian ? moment(dataSource.wenTiXianSuo_shouDaoShiJian).format('YYYY-MM-DD') : ''}
-                    >
+                  <td className={style.val} colSpan={2}>
+                    <TableInput data={dataSource.recieveTime ? moment(dataSource.recieveTime).format('YYYY-MM-DD') : ''}>
                       <Form.Item>
-                        {getFieldDecorator('wenTiXianSuo_shouDaoShiJian', {
-                          rules: [{ required: true, message: '必填!' }]
+                        {getFieldDecorator('recieveTime', {
+                          rules: [{ required: true, message: '必填!' }],
+                          initialValue: this.state.dataSource.recieveTime
+                            ? moment(moment(this.state.dataSource.recieveTime).format('YYYY-MM-DD'), 'YYYY/MM/DD')
+                            : ''
                         })(<DatePicker style={{ width: '100%' }} />)}
                       </Form.Item>
                     </TableInput>
@@ -579,13 +653,16 @@ class RegisterTable extends Component {
                     >
                       <Form.Item>
                         {getFieldDecorator('wenTiXianSuo_beiFanYingRenCanJiaGongZuoShiJian', {
-                          rules: [{ required: true, message: '必填!' }]
+                          rules: [{ required: true, message: '必填!' }],
+                          initialValue: this.state.dataSource.wenTiXianSuo_beiFanYingRenCanJiaGongZuoShiJian
+                            ? moment(moment(this.state.dataSource.wenTiXianSuo_beiFanYingRenCanJiaGongZuoShiJian).format('YYYY-MM-DD'), 'YYYY/MM/DD')
+                            : ''
                         })(<DatePicker style={{ width: '100%' }} />)}
                       </Form.Item>
                     </TableInput>
                   </td>
                   <td className={style.label}>任现职时间</td>
-                  <td className={style.val} colSpan={5}>
+                  <td className={style.val} colSpan={2}>
                     <TableInput
                       data={
                         dataSource.wenTiXianSuo_beiFanYingRenRenXianZhiShiJian
@@ -595,18 +672,88 @@ class RegisterTable extends Component {
                     >
                       <Form.Item>
                         {getFieldDecorator('wenTiXianSuo_beiFanYingRenRenXianZhiShiJian', {
-                          rules: [{ required: true, message: '必填!' }]
+                          rules: [{ required: true, message: '必填!' }],
+                          initialValue: this.state.dataSource.wenTiXianSuo_beiFanYingRenRenXianZhiShiJian
+                            ? moment(moment(this.state.dataSource.wenTiXianSuo_beiFanYingRenRenXianZhiShiJian).format('YYYY-MM-DD'), 'YYYY/MM/DD')
+                            : ''
                         })(<DatePicker style={{ width: '100%' }} />)}
                       </Form.Item>
                     </TableInput>
                   </td>
                 </tr>
                 <tr>
-                  <td className={style.label}>内容摘要</td>
-                  <td className={style.val} colSpan={7}>
-                    <TableInput data={dataSource.wenTiXianSuo_neiRongZhaiYao}>
+                  <td className={style.label}>被反映人分类</td>
+                  <td className={style.val} colSpan={5}>
+                    <TableInput data={dataSource.informeeClass}>
                       <Form.Item>
-                        {getFieldDecorator('wenTiXianSuo_neiRongZhaiYao', {
+                        {getFieldDecorator('informeeClass', {
+                          rules: [{ required: true, message: '必填!' }]
+                        })(
+                          <Select style={{ width: '100%' }}>
+                            {this.fanYingRen.map((item, index) => {
+                              return (
+                                <Option key={index} value={item}>
+                                  {item}
+                                </Option>
+                              )
+                            })}
+                          </Select>
+                        )}
+                      </Form.Item>
+                    </TableInput>
+                  </td>
+                </tr>
+                <tr>
+                  <td className={style.label}>反映问题类型</td>
+                  <td className={style.val} colSpan={5}>
+                    <TableInput data={dataSource.contentClass}>
+                      <Form.Item>
+                        {getFieldDecorator('contentClass', {
+                          rules: [{ required: true, message: '必填!' }]
+                        })(
+                          <Select style={{ width: '100%' }}>
+                            {this.contextType.map((item, index) => {
+                              return (
+                                <Option key={index} value={item}>
+                                  {item}
+                                </Option>
+                              )
+                            })}
+                          </Select>
+                        )}
+                      </Form.Item>
+                    </TableInput>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className={style.label}>信访件来源（地区）</td>
+                  <td className={style.val} colSpan={5}>
+                    <TableInput data={dataSource.sourceCity}>
+                      <Form.Item>
+                        {getFieldDecorator('sourceCity', {
+                          rules: [{ required: true, message: '必填!' }]
+                        })(
+                          <Select style={{ width: '100%' }}>
+                            {this.laiXin.map((item, index) => {
+                              return (
+                                <Option key={index} value={item}>
+                                  {item}
+                                </Option>
+                              )
+                            })}
+                          </Select>
+                        )}
+                      </Form.Item>
+                    </TableInput>
+                  </td>
+                </tr>
+                <tr>
+                  <td className={style.label}>内容摘要</td>
+                  <td className={style.val} colSpan={5}>
+                    <TableInput data={dataSource.content}>
+                      <Form.Item>
+                        {getFieldDecorator('content', {
                           rules: [{ required: true, message: '必填!' }]
                         })(<Input.TextArea />)}
                       </Form.Item>
@@ -615,7 +762,7 @@ class RegisterTable extends Component {
                 </tr>
                 <tr>
                   <td className={style.label}>反映主要问题</td>
-                  <td className={style.val} colSpan={7}>
+                  <td className={style.val} colSpan={5}>
                     <TableInput data={dataSource.wenTiXianSuo_fanYingZhuYaoWenTi}>
                       <Form.Item>
                         {getFieldDecorator('wenTiXianSuo_fanYingZhuYaoWenTi', {
@@ -627,46 +774,7 @@ class RegisterTable extends Component {
                 </tr>
               </tbody>
             </table>
-            <div style={{ display: 'flex', marginTop: 20 }}>
-              <TableInput data={dataSource.wenTiXianSuo_wenTiLeiXing}>
-                <Form.Item style={{ display: 'flex', marginRight: 10 }} label='检索反映问题类型'>
-                  {getFieldDecorator('wenTiXianSuo_wenTiLeiXing', {
-                    rules: [{ required: true, message: '必填!' }]
-                  })(
-                    <Select
-                      style={{ width: 120 }}
-                      allowClear
-                      onChange={e => {
-                        this.changeSecondList(e)
-                      }}
-                    >
-                      {this.state.clueList.map((item, index) => {
-                        return (
-                          <Option key={index} value={item.id}>
-                            {item.name}
-                          </Option>
-                        )
-                      })}
-                    </Select>
-                  )}
-                </Form.Item>
-              </TableInput>
-              <TableInput data={dataSource.wenTiXianSuo_wenTiErJiFenLei}>
-                <Form.Item style={{ display: 'flex' }} label='线索反映问题二级'>
-                  {getFieldDecorator('wenTiXianSuo_wenTiErJiFenLei')(
-                    <Select style={{ width: 410 }} allowClear disabled={this.state.secondList.length === 0}>
-                      {this.state.secondList.map((item, index) => {
-                        return (
-                          <Option key={index} value={item.id}>
-                            {item.name}
-                          </Option>
-                        )
-                      })}
-                    </Select>
-                  )}
-                </Form.Item>
-              </TableInput>
-            </div>
+            {formItems}
             <DisplayControlComponent>
               <div style={{ textAlign: 'left' }}>
                 <UploadComp
@@ -679,9 +787,9 @@ class RegisterTable extends Component {
               </div>
             </DisplayControlComponent>
             <div>
-              <TableInput data={dataSource.anJuan ? dataSource.anJuan : ''}>
+              <TableInput data={dataSource.wenTiXianSuo_chuLiFangShi_neiRong}>
                 <Form.Item style={{ display: 'flex' }} label='案卷提名：'>
-                  {getFieldDecorator('anJuan.name', {
+                  {getFieldDecorator('anJuanTiMing', {
                     rules: [{ required: true, message: '必填!' }]
                   })(<Input style={{ width: 200, marginBottom: 20 }} />)}
                 </Form.Item>

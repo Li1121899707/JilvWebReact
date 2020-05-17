@@ -1,52 +1,38 @@
+/**
+ * @Author 王舒宁
+ * @Date 2020/3/13 14:19
+ **/
+
 import React, { Component } from 'react'
-import { Form, Col, Row, Input, Select, DatePicker, Button, Divider, Table, Tag, Icon, Popconfirm, notification } from 'antd'
+import { Form, Col, Row, Input, Select, DatePicker, Button, Divider, Table, Tag, Popconfirm, Icon, notification } from 'antd'
 import moment from 'moment'
-import Breadcrumbs from '@/components/Breadcrumb'
-import { get, put } from '@/utils/http'
-import { dateToUTC } from '@/utils/common'
 import { router } from 'umi'
+import Breadcrumbs from '@/components/Breadcrumb'
+import { del, get, put } from '@/utils/http'
+import { dateToUTC } from '@/utils/common'
+import UploadForFiles from '@/components/upload/uploadForFiles'
+const ProcessDefinitionKey = 'nmnxxfj_v1'
 
 const { Option } = Select
 
-class delayList extends Component {
+class List extends Component {
   constructor(props) {
     super(props)
     this.PageSize = 10
     this.state = {
       loading: false,
       pagination: { current: 0, pageSize: this.PageSize },
-      dataSource: [
-        {
-          num: '00001',
-          perNum: '10008',
-          beiName: '张三',
-          unit: '金谷农商银行',
-          zhiWu: '主任',
-          startDate: '2019.05.12',
-          chuZhi: '初步核实',
-          Date: '2019.05.20',
-          laiYuan: '信访举报',
-          fanyingName: '陈某',
-          state: '未提交'
-        },
-        {
-          num: '00002',
-          perNum: '10009',
-          beiName: '李四',
-          unit: '金谷农商银行',
-          zhiWu: '主任',
-          startDate: '2019.05.12',
-          chuZhi: '初步核实',
-          Date: '2019.05.20',
-          laiYuan: '信访举报',
-          fanyingName: '陈某',
-          state: '已提交'
-        }
-      ]
+      name: '',
+      url: '',
+      templateUrl: '',
+      dataSource: []
     }
-    this.clueSource = [
-      '全部',
-      '信访举报',
+    this.managementMode = ['自办', '转办', '交办', '督办', '协调']
+    this.letterSource = [
+      '举报邮箱',
+      '微信公众号',
+      '来信来函',
+      '电话举报',
       '上级交办',
       '公检法机关移交',
       '监督检查中发现',
@@ -56,25 +42,39 @@ class delayList extends Component {
       '其他行政执法机关移交',
       '其他'
     ]
-    this.mode = this.props.match.params.type
+    this.managementStatus = [
+      '信访件已导入',
+      '线索已登记',
+      '已填写拟办意见',
+      '已审批',
+      '已上会',
+      '谈话函询中',
+      '初步核实中',
+      '审查调查中',
+      '审理中',
+      '已办结',
+      '暂存待查'
+    ]
   }
 
   componentDidMount() {
-    //this.fetch()
+    this.fetch()
   }
 
   // fetch = (params = {}) => {
   //   let fidldsValue = {}
   //   this.props.form.validateFields((err, values) => {
+  //     values.endTime = moment(values.endTime).add(1, 'd')
   //     fidldsValue = {
   //       ...values,
   //       startTime: values.startTime ? dateToUTC(values.startTime) : '',
   //       endTime: values.endTime ? dateToUTC(values.endTime) : ''
   //     }
+  //     console.log(values)
   //   })
   //   this.setState({ loading: true })
   //   const newParams = { page: 0, size: this.PageSize, ...fidldsValue, ...params }
-  //   get('operate-logs', newParams).then(res => {
+  //   get('petitions/search', newParams).then(res => {
   //     const { pagination } = this.state
   //     if (Object.keys(params).length === 0 && pagination.current !== 0) {
   //       pagination.current = 0
@@ -88,6 +88,40 @@ class delayList extends Component {
   //   })
   // }
 
+  fetch = (params = {}) => {
+    let processDefinitionKey = ProcessDefinitionKey
+    let search = ''
+    this.props.form.validateFields((err, values) => {
+      //字符串拼接搜索条件  逗号拼接
+      for (let item in values) {
+        if (values[item]) {
+          if (values[item]._isAMomentObject) {
+            //搜索时间没有时分秒 因此搜索不到选取日期 如：搜索2020-3-13 到 2020-3-15之间的数据  搜索不到3-13和3-15两天的数据   所以需在搜索前相应的加减一天
+            if (item.indexOf('<') > -1) {
+              values[item] = moment(values[item]).add(1, 'd')
+            }
+            values[item] = moment(values[item]).format('YYYY-MM-DD')
+          }
+          search += `,${item}${values[item]}`
+        }
+      }
+      search = search ? search.substring(1) : ''
+      // search += ',status=问题线索'
+      get(`activiti/process/instances/all?processDefinitionKey=${processDefinitionKey}&search=${search}`, {
+        size: this.state.pagination.pageSize,
+        page: 0,
+        ...params
+      }).then(res => {
+        const { pagination } = this.state
+        pagination.total = parseInt(res.headers['x-total-count'], 10)
+        this.setState({
+          dataSource: res.data,
+          pagination
+        })
+      })
+    })
+  }
+
   handleTableChange = (pagination, filters) => {
     const pager = { ...this.state.pagination }
     pager.current = pagination.current - 1
@@ -98,9 +132,24 @@ class delayList extends Component {
     })
   }
 
+  handleCancelForFile = () => {
+    this.setState({
+      uploadModal: false
+    })
+    this.fetch()
+  }
+
+  delete = id => {
+    del(`petitions/${id}`).then(res => {
+      notification.success({ message: '删除成功' })
+      this.fetch()
+    })
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form
     const defaultValue = JSON.parse(sessionStorage.getItem(''))
+
     const columns = [
       {
         title: '序号',
@@ -109,22 +158,9 @@ class delayList extends Component {
         render: (text, record, index) => <span>{index + 1}</span>
       },
       {
-        title: '线索编号',
+        title: '信访件编号',
         align: 'center',
-        dataIndex: 'num',
-        render: text => {
-          if (text === null) {
-            const color = ''
-            const status = ''
-            return <Tag color={color}>{status}</Tag>
-          }
-          return text
-        }
-      },
-      {
-        title: '案件名称',
-        align: 'center',
-        dataIndex: 'perNum',
+        dataIndex: 'form.petitionNum',
         render: text => {
           if (text === null) {
             const color = ''
@@ -137,7 +173,7 @@ class delayList extends Component {
       {
         title: '被反映人',
         align: 'center',
-        dataIndex: 'beiName',
+        dataIndex: 'form.informee',
         render: text => {
           if (text === null) {
             const color = ''
@@ -150,7 +186,7 @@ class delayList extends Component {
       {
         title: '工作单位',
         align: 'center',
-        dataIndex: 'unit',
+        dataIndex: 'form.informeeUnit',
         render: text => {
           if (text === null) {
             const color = ''
@@ -163,7 +199,7 @@ class delayList extends Component {
       {
         title: '职务',
         align: 'center',
-        dataIndex: 'zhiWu',
+        dataIndex: 'form.informeePost',
         render: text => {
           if (text === null) {
             const color = ''
@@ -174,17 +210,17 @@ class delayList extends Component {
         }
       },
       {
-        title: '审理日期',
-        dataIndex: 'startDate',
-        align: 'center'
-        // render: text => {
-        //   return moment(text).format('YYYY-MM-DD')
-        // }
-      },
-      {
-        title: '处置方法',
+        title: '导入时间',
+        dataIndex: 'form.inputTime',
         align: 'center',
-        dataIndex: 'chuZhi',
+        render: text => {
+          return text ? moment(text).format('YYYY-MM-DD') : ''
+        }
+      },
+      {
+        title: '线索编号',
+        align: 'center',
+        dataIndex: 'form.reportNum',
         render: text => {
           if (text === null) {
             const color = ''
@@ -193,19 +229,11 @@ class delayList extends Component {
           }
           return text
         }
-      },
-      {
-        title: '呈批日期',
-        dataIndex: 'Date',
-        align: 'center'
-        // render: text => {
-        //   return moment(text).format('YYYY-MM-DD')
-        // }
       },
       {
         title: '线索来源',
         align: 'center',
-        dataIndex: 'laiYuan',
+        dataIndex: 'form.source',
         render: text => {
           if (text === null) {
             const color = ''
@@ -218,7 +246,7 @@ class delayList extends Component {
       {
         title: '反映人',
         align: 'center',
-        dataIndex: 'fanyingName',
+        dataIndex: 'form.reporter',
         render: text => {
           if (text === null) {
             const color = ''
@@ -231,7 +259,7 @@ class delayList extends Component {
       {
         title: '办理状态',
         align: 'center',
-        dataIndex: 'state',
+        dataIndex: 'form.status',
         render: text => {
           if (text === null) {
             const color = ''
@@ -246,52 +274,61 @@ class delayList extends Component {
         align: 'center',
         dataIndex: 'operate',
         render: (text, record) => {
-          if (record.state === '已呈批') {
-            return (
-              <div>
-                <Button type='link' size='small'>
-                  查看
-                </Button>
-              </div>
-            )
-          } else if (record.state === '未提交') {
-            return (
-              <div>
+          console.log(record)
+          return (
+            <div>
+              {record.form.status === '已登记' || record.form.status === '信访件已导入' ? (
                 <Button
                   type='link'
                   size='small'
                   onClick={() => {
-                    router.push('/admin/petition/management/add/1/YanQiShenLi')
+                    router.push(`/admin/letters/show/${record.processInstanceId}/register`)
                   }}
                 >
-                  填写案件审理工作延期申请呈批表
+                  详情
                 </Button>
-                <Button type='link' size='small'>
-                  查看
-                </Button>
-              </div>
-            )
-          } else if (record.state === '已提交') {
-            return (
-              <div>
-                <Button type='link' size='small'>
-                  查看
-                </Button>
+              ) : (
                 <Button
                   type='link'
                   size='small'
                   onClick={() => {
-                    router.push('/admin/petition/management/add/1/ShenYueYanQiShenLi')
+                    router.push(`/admin/letters/show/${record.processInstanceId}/lingdaoregister`)
                   }}
                 >
-                  审阅
+                  详情
                 </Button>
-              </div>
-            )
-          }
+              )}
+              {record.form.status === '已审批' ? (
+                <span>
+                  <Button
+                    type='link'
+                    size='small'
+                    onClick={() => {
+                      router.push(`/admin/letters/add/${record.processInstanceId}/clueRegister`)
+                    }}
+                  >
+                    生成新线索
+                  </Button>
+                  <Button
+                    type='link'
+                    size='small'
+                    onClick={() => {
+                      console.log(record.form.informee)
+                      router.push(`/admin/letters/${record.processInstanceId}/mergeList/${record.form.informee}`)
+                    }}
+                  >
+                    合并到已有线索
+                  </Button>
+                </span>
+              ) : (
+                ''
+              )}
+            </div>
+          )
         }
       }
     ]
+
     const formItemLayout = {
       labelCol: { span: 10 },
       wrapperCol: { span: 14 }
@@ -307,46 +344,38 @@ class delayList extends Component {
                   <tbody style={{ textAlign: 'right' }}>
                     <tr>
                       <td>
-                        <Form.Item label='审理日期起'>
-                          {getFieldDecorator('shenLiGuanLi_yanQiShenLi_shenLiRiQi>', {
+                        <Form.Item label='导入时间起'>
+                          {getFieldDecorator('startTime', {
                             // getValueFromEvent: event => event.target.value.replace(/\s+/g, ''),
                             // initialValue: defaultValue ? defaultValue.customerinfoName : ''
                           })(<DatePicker style={{ width: '100%' }} />)}
                         </Form.Item>
                       </td>
                       <td>
-                        <Form.Item label='审理日期止'>
-                          {getFieldDecorator('shenLiGuanLi_yanQiShenLi_shenLiRiQi<', {
+                        <Form.Item label='导入时间止'>
+                          {getFieldDecorator('endTime', {
                             // getValueFromEvent: event => event.target.value.replace(/\s+/g, ''),
                             // initialValue: defaultValue ? defaultValue.customerinfoName : ''
                           })(<DatePicker style={{ width: '100%' }} />)}
                         </Form.Item>
                       </td>
                       <td>
-                        <Form.Item label='办理状态'>
-                          {getFieldDecorator('shenLiGuanLi_yanQiShenLi_banLiZhuangTai=', {
-                            // getValueFromEvent: event => event.target.value.replace(/\s+/g, ''),
-                            initialValue: defaultValue ? defaultValue.customerinfoGroup : ''
-                          })(
-                            <Select allowClear>
-                              <Option value='全部'>全部</Option>
-                              <Option value='未提交'>未提交</Option>
-                              <Option value='已提交'>已提交</Option>
-                              <Option value='已呈批'>已呈批</Option>
-                            </Select>
-                          )}
+                        <Form.Item label='反映人'>
+                          {getFieldDecorator('reporter', {
+                            initialValue: defaultValue ? defaultValue.customerinfoIfgroup : ''
+                          })(<Input allowClear />)}
                         </Form.Item>
                       </td>
                     </tr>
                     <tr>
                       <td>
-                        <Form.Item label='线索来源'>
-                          {getFieldDecorator('shenLiGuanLi_yanQiShenLi_xianSuoLaiYuan=', {
+                        <Form.Item label='信访件来源'>
+                          {getFieldDecorator('source', {
                             // getValueFromEvent: event => event.target.value.replace(/\s+/g, ''),
                             initialValue: defaultValue ? defaultValue.customerinfoGroup : ''
                           })(
                             <Select allowClear>
-                              {this.clueSource.map(item => {
+                              {this.letterSource.map(item => {
                                 return <Option value={item}>{item}</Option>
                               })}
                             </Select>
@@ -354,18 +383,29 @@ class delayList extends Component {
                         </Form.Item>
                       </td>
                       <td>
-                        <Form.Item label='被反映人'>
-                          {getFieldDecorator('shenLiGuanLi_yanQiShenLi_beiFanYingRen~', {
-                            getValueFromEvent: event => event.target.value.replace(/\s+/g, ''),
+                        <Form.Item label='办理状态'>
+                          {getFieldDecorator('state', {
+                            // getValueFromEvent: event => event.target.value.replace(/\s+/g, ''),
                             initialValue: defaultValue ? defaultValue.customerinfoGroup : ''
-                          })(<Input disabled={this.state.disable} onChange={this.onChange} allowClear />)}
+                          })(
+                            <Select allowClear>
+                              {this.managementStatus.map((item, index) => {
+                                return (
+                                  <Option key={index} value={item}>
+                                    {item}
+                                  </Option>
+                                )
+                              })}
+                            </Select>
+                          )}
                         </Form.Item>
                       </td>
                       <td>
-                        <Form.Item label='反映人'>
-                          {getFieldDecorator('shenLiGuanLi_yanQiShenLi_fanYingRen~', {
-                            initialValue: defaultValue ? defaultValue.customerinfoIfgroup : ''
-                          })(<Input allowClear />)}
+                        <Form.Item label='被反映人'>
+                          {getFieldDecorator('informee', {
+                            getValueFromEvent: event => event.target.value.replace(/\s+/g, ''),
+                            initialValue: defaultValue ? defaultValue.customerinfoGroup : ''
+                          })(<Input disabled={this.state.disable} onChange={this.onChange} allowClear />)}
                         </Form.Item>
                       </td>
                       <td>
@@ -380,9 +420,7 @@ class delayList extends Component {
             </Row>
           </Form>
           <Divider />
-          <Button style={{ marginRight: 20 }} type='primary'>
-            导出
-          </Button>
+
           <div>
             <Table
               rowKey={record => record.id}
@@ -392,10 +430,17 @@ class delayList extends Component {
               loading={this.state.loading}
               onChange={this.handleTableChange}
             />
+            <UploadForFiles
+              visible={this.state.uploadModal}
+              handleCancel={this.handleCancelForFile}
+              templateUrl={this.state.templateUrl}
+              name={this.state.name}
+              url={this.state.url}
+            />
           </div>
         </div>
       </div>
     )
   }
 }
-export default Form.create()(delayList)
+export default Form.create()(List)

@@ -1,7 +1,3 @@
-/*
- * @author: 王志鹏
- * @Datetime  2020/2/19 16:44
- */
 import React, { Component } from 'react'
 import { Button, DatePicker, Form, Input, notification, Select, Timeline, Upload } from 'antd'
 import moment from 'moment'
@@ -12,7 +8,6 @@ import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
 import { get, post } from '@/utils/http'
 import DisplayControlComponent from '@/pages/信访管理/common/DisplayControlComponent'
 import { formatLeader, isLeader, methodForIsLeader, untils } from '@/pages/信访管理/common/untils'
-import { exportFiles } from '@/utils/common'
 
 const { Option } = Select
 
@@ -106,7 +101,6 @@ class ZanCunLingDaoShenPiTable extends Component {
       post(`thread/claimAndComplete?taskId=${taskid}&processInstanceId=${processInstanceId}&nextAssignee=${leader}&isLocal=${0}`, values).then(
         res => {
           notification.success({ message: '提交成功' })
-          router.goBack()
         }
       )
       // })
@@ -128,7 +122,7 @@ class ZanCunLingDaoShenPiTable extends Component {
     return (
       <div className={style.content}>
         <div className={style.content_box}>
-          <p className={style.title}>内蒙古自治区纪委监委驻自治区农信联社纪检监察组</p>
+          <p className={style.title}>中共内蒙古自治区农村信用社联合社检查委员会</p>
           <p className={style.title}>暂存待查呈批表</p>
           <Form>
             <table className={style.table}>
@@ -233,12 +227,7 @@ class ZanCunLingDaoShenPiTable extends Component {
               相关附件:
               {dataSource.wenTiXianSuo_zanCunDaiCha_files &&
                 dataSource.wenTiXianSuo_zanCunDaiCha_files.map(item => (
-                  <a
-                    target='_blank'
-                    onClick={() => {
-                      exportFiles(`${window.server}/api/files/${item.response.path}`, item.response.path)
-                    }}
-                  >
+                  <a target='_blank' href={`${window.server}/api/files/${item.response.path}`}>
                     {item.response.fileName}&emsp;
                   </a>
                 ))}

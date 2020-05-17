@@ -1,8 +1,3 @@
-/**
- * @Author 王舒宁
- * @Date 2020/3/13 14:19
- **/
-
 import React, { Component } from 'react'
 import { Form, Col, Row, Input, Select, DatePicker, Button, Divider, Table, Tag, Popconfirm, Icon, notification } from 'antd'
 import moment from 'moment'
@@ -11,7 +6,6 @@ import Breadcrumbs from '@/components/Breadcrumb'
 import { del, get, put } from '@/utils/http'
 import { dateToUTC } from '@/utils/common'
 import UploadForFiles from '@/components/upload/uploadForFiles'
-const ProcessDefinitionKey = 'nmnxxfj_v1'
 
 const { Option } = Select
 
@@ -27,8 +21,9 @@ class List extends Component {
       templateUrl: '',
       dataSource: []
     }
-    this.managementMode = ['自办', '转办', '交办', '督办', '协调']
+    this.managementMode = ['全部', '自办', '转办', '交办', '督办', '协调']
     this.letterSource = [
+      '全部',
       '举报邮箱',
       '微信公众号',
       '来信来函',
@@ -43,6 +38,7 @@ class List extends Component {
       '其他'
     ]
     this.managementStatus = [
+      '全部',
       '信访件已导入',
       '线索已登记',
       '已填写拟办意见',
@@ -61,63 +57,29 @@ class List extends Component {
     this.fetch()
   }
 
-  // fetch = (params = {}) => {
-  //   let fidldsValue = {}
-  //   this.props.form.validateFields((err, values) => {
-  //     values.endTime = moment(values.endTime).add(1, 'd')
-  //     fidldsValue = {
-  //       ...values,
-  //       startTime: values.startTime ? dateToUTC(values.startTime) : '',
-  //       endTime: values.endTime ? dateToUTC(values.endTime) : ''
-  //     }
-  //     console.log(values)
-  //   })
-  //   this.setState({ loading: true })
-  //   const newParams = { page: 0, size: this.PageSize, ...fidldsValue, ...params }
-  //   get('petitions/search', newParams).then(res => {
-  //     const { pagination } = this.state
-  //     if (Object.keys(params).length === 0 && pagination.current !== 0) {
-  //       pagination.current = 0
-  //     }
-  //     pagination.total = parseInt(res.headers['x-total-count'], 10)
-  //     this.setState({
-  //       dataSource: res.data,
-  //       loading: false,
-  //       pagination
-  //     })
-  //   })
-  // }
-
   fetch = (params = {}) => {
-    let processDefinitionKey = ProcessDefinitionKey
-    let search = ''
+    let fidldsValue = {}
     this.props.form.validateFields((err, values) => {
-      //字符串拼接搜索条件  逗号拼接
-      for (let item in values) {
-        if (values[item]) {
-          if (values[item]._isAMomentObject) {
-            //搜索时间没有时分秒 因此搜索不到选取日期 如：搜索2020-3-13 到 2020-3-15之间的数据  搜索不到3-13和3-15两天的数据   所以需在搜索前相应的加减一天
-            if (item.indexOf('<') > -1) {
-              values[item] = moment(values[item]).add(1, 'd')
-            }
-            values[item] = moment(values[item]).format('YYYY-MM-DD')
-          }
-          search += `,${item}${values[item]}`
-        }
+      values.endTime = moment(values.endTime).add(1, 'd')
+      fidldsValue = {
+        ...values,
+        startTime: values.startTime ? dateToUTC(values.startTime) : '',
+        endTime: values.endTime ? dateToUTC(values.endTime) : ''
       }
-      search = search ? search.substring(1) : ''
-      // search += ',status=问题线索'
-      get(`activiti/process/instances/all?processDefinitionKey=${processDefinitionKey}&search=${search}`, {
-        size: this.state.pagination.pageSize,
-        page: 0,
-        ...params
-      }).then(res => {
-        const { pagination } = this.state
-        pagination.total = parseInt(res.headers['x-total-count'], 10)
-        this.setState({
-          dataSource: res.data,
-          pagination
-        })
+      console.log(values)
+    })
+    this.setState({ loading: true })
+    const newParams = { page: 0, size: this.PageSize, ...fidldsValue, ...params }
+    get('petitions/search', newParams).then(res => {
+      const { pagination } = this.state
+      if (Object.keys(params).length === 0 && pagination.current !== 0) {
+        pagination.current = 0
+      }
+      pagination.total = parseInt(res.headers['x-total-count'], 10)
+      this.setState({
+        dataSource: res.data,
+        loading: false,
+        pagination
       })
     })
   }
@@ -149,7 +111,6 @@ class List extends Component {
   render() {
     const { getFieldDecorator } = this.props.form
     const defaultValue = JSON.parse(sessionStorage.getItem(''))
-
     const columns = [
       {
         title: '序号',
@@ -160,7 +121,7 @@ class List extends Component {
       {
         title: '信访件编号',
         align: 'center',
-        dataIndex: 'form.petitionNum',
+        dataIndex: 'petitionNum',
         render: text => {
           if (text === null) {
             const color = ''
@@ -173,7 +134,7 @@ class List extends Component {
       {
         title: '被反映人',
         align: 'center',
-        dataIndex: 'form.informee',
+        dataIndex: 'informee',
         render: text => {
           if (text === null) {
             const color = ''
@@ -186,7 +147,7 @@ class List extends Component {
       {
         title: '工作单位',
         align: 'center',
-        dataIndex: 'form.informeeUnit',
+        dataIndex: 'informeeUnit',
         render: text => {
           if (text === null) {
             const color = ''
@@ -199,7 +160,7 @@ class List extends Component {
       {
         title: '职务',
         align: 'center',
-        dataIndex: 'form.informeePost',
+        dataIndex: 'informeePost',
         render: text => {
           if (text === null) {
             const color = ''
@@ -211,7 +172,7 @@ class List extends Component {
       },
       {
         title: '导入时间',
-        dataIndex: 'form.inputTime',
+        dataIndex: 'inputTime',
         align: 'center',
         render: text => {
           return text ? moment(text).format('YYYY-MM-DD') : ''
@@ -220,7 +181,7 @@ class List extends Component {
       {
         title: '线索编号',
         align: 'center',
-        dataIndex: 'form.reportNum',
+        dataIndex: 'reportNum',
         render: text => {
           if (text === null) {
             const color = ''
@@ -233,7 +194,7 @@ class List extends Component {
       {
         title: '线索来源',
         align: 'center',
-        dataIndex: 'form.source',
+        dataIndex: 'source',
         render: text => {
           if (text === null) {
             const color = ''
@@ -246,7 +207,7 @@ class List extends Component {
       {
         title: '反映人',
         align: 'center',
-        dataIndex: 'form.reporter',
+        dataIndex: 'reporter',
         render: text => {
           if (text === null) {
             const color = ''
@@ -259,7 +220,7 @@ class List extends Component {
       {
         title: '办理状态',
         align: 'center',
-        dataIndex: 'form.status',
+        dataIndex: 'state',
         render: text => {
           if (text === null) {
             const color = ''
@@ -277,34 +238,22 @@ class List extends Component {
           console.log(record)
           return (
             <div>
-              {record.form.status === '已登记' || record.form.status === '信访件已导入' ? (
-                <Button
-                  type='link'
-                  size='small'
-                  onClick={() => {
-                    router.push(`/admin/letters/show/${record.processInstanceId}/register`)
-                  }}
-                >
-                  详情
-                </Button>
-              ) : (
-                <Button
-                  type='link'
-                  size='small'
-                  onClick={() => {
-                    router.push(`/admin/letters/show/${record.processInstanceId}/lingdaoregister`)
-                  }}
-                >
-                  详情
-                </Button>
-              )}
-              {record.form.status === '已审批' ? (
+              <Button
+                type='link'
+                size='small'
+                onClick={() => {
+                  router.push(`/admin/petition/clue/letter/show/${record.id}/register`)
+                }}
+              >
+                详情
+              </Button>
+              {record.state === '信访件已导入' ? (
                 <span>
                   <Button
                     type='link'
                     size='small'
                     onClick={() => {
-                      router.push(`/admin/letters/add/${record.processInstanceId}/clueRegister`)
+                      router.push(`/admin/letters/add/${record.id}/clueRegister`)
                     }}
                   >
                     生成新线索
@@ -313,8 +262,7 @@ class List extends Component {
                     type='link'
                     size='small'
                     onClick={() => {
-                      console.log(record.form.informee)
-                      router.push(`/admin/letters/${record.processInstanceId}/mergeList/${record.form.informee}`)
+                      router.push(`/admin/letters/${record.id}/mergeList`)
                     }}
                   >
                     合并到已有线索
@@ -328,7 +276,6 @@ class List extends Component {
         }
       }
     ]
-
     const formItemLayout = {
       labelCol: { span: 10 },
       wrapperCol: { span: 14 }

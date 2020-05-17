@@ -1,28 +1,31 @@
+/**
+ * @Author 王舒宁
+ * @Date 2020/3/13 15:08
+ **/
+
 import React, { Component } from 'react'
 import { router } from 'umi'
-import { Button, DatePicker, Form, Input, Select, Upload, notification, Radio, Timeline } from 'antd'
+import { Button, DatePicker, Form, Input, Select, Upload, notification, Radio } from 'antd'
 import moment from 'moment'
 import style from '@/pages/信访管理/Index.less'
 import TableInput from '@/pages/信访管理/common/TableInput'
 import { get, post, put } from '@/utils/http'
 import UploadComp from '@/components/upload/Upload'
+import { isLeader } from '@/pages/信访管理/common/untils'
 import DisplayControlComponent from '@/pages/信访管理/common/DisplayControlComponent'
-import { formatLeader, isLeader, methodForIsLeader, untils } from '@/pages/信访管理/common/untils'
 import { exportFiles } from '@/utils/common'
 
 const { Option } = Select
-
 const ProcessDefinitionKey = 'nmnxxfj_v1'
 
-class RegisterTable extends Component {
+class chuZhiXinFangJian extends Component {
   constructor(props) {
     super(props)
     this.state = {
       dataSource: {},
       value: '自办',
       leaderList: [],
-      taskDefinitionKey: '',
-      leaderOption: []
+      leader: ''
     }
     this.id = this.props.match.params.id
     this.type = this.props.match.params.type
@@ -53,8 +56,6 @@ class RegisterTable extends Component {
       '诉求类',
       '其他违反八项规定精神的问题'
     ]
-    this.statusKey = 'xinFangJian'
-    this.leader = ''
   }
 
   componentDidMount() {
@@ -62,75 +63,61 @@ class RegisterTable extends Component {
   }
 
   fetch = () => {
-    get(`activiti/process/instance?processInstanceId=${this.id}`).then(async res => {
+    get(`activiti/process/instance?processInstanceId=${this.id}`).then(res => {
+      this.huoquhouxunaren()
       this.setState({
         dataSource: res.data.form,
-        data: res.data,
-        leaderOption: res.data.form.xinFangJian_yiJian,
-        taskDefinitionKey: res.data.historicUserTaskInstanceList[res.data.historicUserTaskInstanceList.length - 1].taskDefinitionKey
+        data: res.data
       })
-      //根据当前任务实例id指派下一任务审批人（传参传下一任务实例id）
-      const taskGroup = res.data.historicUserTaskInstanceList[res.data.historicUserTaskInstanceList.length - 1].taskDefinitionKey
-      console.log(taskGroup)
-      const { leaderList, taskDefinitionKey } = await untils(taskGroup, this.statusKey, ProcessDefinitionKey)
+    })
+  }
+
+  selectChange = val => {
+    this.setState({
+      leader: val
+    })
+  }
+
+  huoquhouxunaren = () => {
+    let processDefinitionKey = ProcessDefinitionKey
+    let taskId = 'xinFangJian_jiJianJianChaShi'
+    get(`activiti/process/${processDefinitionKey}/tasks/${taskId}/candidateUsers`).then(res => {
       this.setState({
-        leaderList,
-        taskDefinitionKey
+        leaderList: res.data
       })
     })
   }
 
   submit = () => {
     let time = moment(new Date()).format('YYYY-MM-DD hh:mm:ss')
-    let leader
+    const { data } = this.state
+    const taskid = data.historicUserTaskInstanceList[data.historicUserTaskInstanceList.length - 1].taskInstanceId
+    const processInstanceId = data.processInstanceId
+    const taskName = data.historicUserTaskInstanceList[data.historicUserTaskInstanceList.length - 1].taskName
+
     this.props.form.validateFields((err, values) => {
-      let xinFangJian = []
       let yijianArr = []
-      if (this.state.dataSource.xinFangJian_yiJian) {
-        xinFangJian = this.state.dataSource.xinFangJian_yiJian
+      if (this.state.dataSource.wenTiXianSuo_niBanYiJian) {
+        yijianArr = this.state.dataSource.wenTiXianSuo_niBanYiJian
       }
-      const leaderType = formatLeader(this.state.taskDefinitionKey, this.statusKey)
       const obj = {
         name: window.USER.userName,
         usercode: window.USER.userCode,
-        type: '审批处置意见',
+        type: '拟办意见',
         advise: values.wenTiXianSuo_niBanYiJian ? values.wenTiXianSuo_niBanYiJian : '',
         time,
-        leaderType
+        link: `/admin/petition/clue/show/${processInstanceId}/lingdaoshenpi`,
+        leaderType: '登记人'
       }
-
-      xinFangJian.push(obj)
-      values.xinFangJian_yiJian = xinFangJian
-      const taskGroup = this.state.data.historicUserTaskInstanceList[this.state.data.historicUserTaskInstanceList.length - 1].taskDefinitionKey
-
-      //根据当前任务实例id传状态 党委书记审批时状态为已审批 纪委书记 承办领导是时状态为已填写拟办意见
-      if (taskGroup === 'xinFangJian_dangWeiShuJi') {
-        values.status = '已审批'
-      } else {
-        values.status = '已审批'
-      }
-      methodForIsLeader(this.leader, this.statusKey, function(item, show, key) {
-        if (show) {
-          values.status = '已审批'
-          leader = ''
-        } else {
-          values.status = '已审批'
-          leader = key
-        }
-        values.IsLingDao = '是'
-        item.forEach(itemObj => {
-          if (itemObj.value === '否') {
-            values.IsLingDao = '否'
-          }
-        })
-      })
-
+      yijianArr.push(obj)
+      values.xinFangJian_yiJian = yijianArr
+      values.status = '已呈批'
+      values.attachment = this.fileRef.state.fileList
+      console.log(values)
       if (err) return false
-      //完成任务并指派下一任务审批人
+
       post(
-        `thread/claimAndComplete?taskId=${
-          this.state.data.historicUserTaskInstanceList[this.state.data.historicUserTaskInstanceList.length - 1].taskInstanceId
-        }&processInstanceId=${this.state.data.processInstanceId}&nextAssignee=${leader}&isLocal=${0}`,
+        `thread/claimAndComplete?taskId=${taskid}&processInstanceId=${processInstanceId}&nextAssignee=${this.state.leader}&isLocal=${0}`,
         values
       ).then(res => {
         notification.success({ message: '提交成功' })
@@ -145,13 +132,9 @@ class RegisterTable extends Component {
     })
   }
 
-  selectChange = (value, e) => {
-    this.leader = value
-  }
-
   render() {
     const { getFieldDecorator, getFieldValue } = this.props.form
-    const { dataSource, leaderList, taskDefinitionKey } = this.state
+    const { dataSource, leaderList } = this.state
     const leaderListItem = leaderList.map((item, index) => (
       <Option key={index} value={item.userCode}>
         {item.userName}
@@ -161,7 +144,7 @@ class RegisterTable extends Component {
       <div className={style.content}>
         <div className={style.content_box}>
           <p className={style.title}>内蒙古自治区纪委监委驻自治区农信联社纪检监察组</p>
-          <p className={style.title}>信访件登记表</p>
+          <p className={style.title}>信访件拟办单</p>
           <Form>
             <table className={style.table}>
               <tbody>
@@ -219,61 +202,65 @@ class RegisterTable extends Component {
                     {dataSource.content}
                   </td>
                 </tr>
-                <tr>
-                  <td className={style.label}>处理方式</td>
-                  <td className={style.val} colSpan={5}>
-                    {dataSource.xinFangJian_chuLiFangShi}
-                  </td>
-                </tr>
-                {dataSource.xinFangJian_gongSi && (
-                  <tr>
-                    <td className={style.label}>转交单位</td>
-                    <td className={style.val} colSpan={5}>
-                      {dataSource.xinFangJian_gongSi}
-                    </td>
-                  </tr>
-                )}
-                <tr>
-                  <td className={style.label}>拟办/审批意见</td>
-                  <td className={style.val} colSpan={7}>
-                    <Timeline mode='left'>
-                      {this.state.leaderOption.map((item, index) => (
-                        <Timeline.Item key={index} style={{ textAlign: 'left' }}>
-                          <div>
-                            {item.name} {item.time}
-                          </div>
-                          <div className={style.bold}>{item.type}：</div>
-                          <div>{item.advise}</div>
-                        </Timeline.Item>
-                      ))}
-                    </Timeline>
-                  </td>
-                </tr>
               </tbody>
             </table>
-
-            <p style={{ textAlign: 'left' }}>
-              相关附件:
-              {dataSource.attachment &&
-                dataSource.attachment.map(item => {
-                  console.log(item.response)
-                  return (
+            {this.type !== 'show' ? (
+              <div style={{ textAlign: 'left' }}>
+                <UploadComp
+                  key={dataSource.wenTiXianSuo_xuHao || 0}
+                  fileList={dataSource.attachment || []}
+                  ref={ref => {
+                    this.fileRef = ref
+                  }}
+                />
+              </div>
+            ) : (
+              <p style={{ textAlign: 'left' }}>
+                相关附件:
+                {dataSource.attachment &&
+                  dataSource.attachment.map(item => (
                     <a
                       target='_blank'
                       onClick={() => {
-                        exportFiles(`${window.server}/api/files/${item.response.path}`,item.response.path)
+                        exportFiles(`${window.server}/api/files/${item.response.path}`, item.response.path)
                       }}
                     >
                       {item.response.fileName}&emsp;
                     </a>
-                  )
-                })}
-            </p>
+                  ))}
+              </p>
+            )}
+            <div style={{ display: 'flex' }}>
+              <TableInput data={dataSource.xinFangJian_chuLiFangShi}>
+                <Form.Item style={{ display: 'flex', marginRight: 10 }} label='办理方式'>
+                  {getFieldDecorator('xinFangJian_chuLiFangShi', {
+                    rules: [{ required: true, message: '必填!' }]
+                  })(
+                    <Radio.Group onChange={this.onChange}>
+                      <Radio value='自办'>自办</Radio>
+                      <Radio value='转办'>转办</Radio>
+                      <Radio value='交办'>交办</Radio>
+                    </Radio.Group>
+                  )}
+                </Form.Item>
+              </TableInput>
+            </div>
 
+            {this.state.value !== '自办' && this.state.value !== '' ? (
+              <div style={{ display: 'flex' }}>
+                <TableInput data={dataSource.xinFangJian_gongSi}>
+                  <Form.Item style={{ display: 'flex', marginRight: 10 }} label='转办/交办部门'>
+                    {getFieldDecorator('xinFangJian_gongSi', {
+                      rules: [{ required: true, message: '必填!' }]
+                    })(<Input />)}
+                  </Form.Item>
+                </TableInput>
+              </div>
+            ) : null}
             <DisplayControlComponent>
               <div className={style.title}>
                 <TableInput propsMode='add' data={dataSource.wenTiXianSuo_niBanYiJian}>
-                  <Form.Item label='领导审批意见：' style={{ display: 'flex' }}>
+                  <Form.Item label='承办室意见：' style={{ display: 'flex' }}>
                     {getFieldDecorator('wenTiXianSuo_niBanYiJian', {
                       rules: [{ required: true, message: '必填!' }]
                     })(<Input.TextArea size='large' allowClear rows={8} style={{ width: 900 }} />)}
@@ -288,7 +275,6 @@ class RegisterTable extends Component {
                       rules: [{ required: true, message: '必填!' }]
                     })(
                       <Select style={{ width: 200 }} onChange={this.selectChange}>
-                        {isLeader(taskDefinitionKey, this.statusKey)}
                         {leaderListItem}
                       </Select>
                     )}
@@ -313,5 +299,5 @@ class RegisterTable extends Component {
   }
 }
 
-const wapper = Form.create()(RegisterTable)
+const wapper = Form.create()(chuZhiXinFangJian)
 export default wapper

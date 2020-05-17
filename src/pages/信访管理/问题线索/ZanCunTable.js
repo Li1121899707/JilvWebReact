@@ -1,7 +1,3 @@
-/*
- * @author: 王志鹏
- * @Datetime  2020/2/19 16:44
- */
 import React, { Component } from 'react'
 import { Button, DatePicker, Form, Input, notification, Select, Timeline, Upload } from 'antd'
 import moment from 'moment'
@@ -102,7 +98,6 @@ class ZanCunTable extends Component {
           values
         ).then(res => {
           notification.success({ message: '提交成功' })
-          router.goBack()
         })
         // })
       })
@@ -124,7 +119,7 @@ class ZanCunTable extends Component {
     return (
       <div className={style.content}>
         <div className={style.content_box}>
-          <p className={style.title}>内蒙古自治区纪委监委驻自治区农信联社纪检监察组</p>
+          <p className={style.title}>中共内蒙古自治区农村信用社联合社检查委员会</p>
           <p className={style.title}>暂存待查呈批表</p>
           <Form>
             <table className={style.table}>

@@ -1,8 +1,3 @@
-/**
- * @Author 王志鹏
- * @Date 2020/5/12 15:02
- **/
-
 import React, { Component } from 'react'
 import { Tabs } from 'antd'
 import ChuBuHeShi from '../初步核实/ShenPiChengPi'

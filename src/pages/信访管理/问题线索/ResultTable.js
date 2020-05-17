@@ -1,8 +1,3 @@
-/**
- * @Author 王舒宁
- * @Date 2020/3/17 11:13
- **/
-
 import React, { Component } from 'react'
 import { Button, DatePicker, Form, Input, Select, Timeline, notification } from 'antd'
 import moment from 'moment'
@@ -35,7 +30,7 @@ class ResultTable extends Component {
     return (
       <div className={styles.content}>
         <div className={styles.content_box}>
-          <p className={styles.title}>内蒙古自治区纪委监委驻自治区农信联社纪检监察组</p>
+          <p className={styles.title}>中共内蒙古自治区农村信用社联合社检查委员会</p>
           <p className={styles.title}>问题线索结果登记表</p>
           <Form>
             <table className={styles.table}>

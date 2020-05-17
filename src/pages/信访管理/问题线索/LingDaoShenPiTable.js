@@ -1,7 +1,3 @@
-/*
- * @author: 王志鹏
- * @Datetime  2020/2/20 15:41
- */
 import React, { Component } from 'react'
 import { Button, DatePicker, Form, Input, Select, Timeline, notification } from 'antd'
 import moment from 'moment'
@@ -12,7 +8,6 @@ import { get, post } from '@/utils/http'
 import ProcessDefinitionKey from '../common/aboutActiviti'
 import DisplayControlComponent from '@/pages/信访管理/common/DisplayControlComponent'
 import { formatLeader, isLeader, methodForIsLeader, untils } from '@/pages/信访管理/common/untils'
-import { exportFiles } from '@/utils/common'
 
 const { Option } = Select
 
@@ -99,7 +94,6 @@ class LingDaoShenPiTable extends Component {
         values
       ).then(res => {
         notification.success({ message: '提交成功' })
-        router.goBack()
       })
     })
   }
@@ -119,7 +113,7 @@ class LingDaoShenPiTable extends Component {
     return (
       <div className={styles.content}>
         <div className={styles.content_box}>
-          <p className={styles.title}>内蒙古自治区纪委监委驻自治区农信联社纪检监察组</p>
+          <p className={styles.title}>中共内蒙古自治区农村信用社联合社检查委员会</p>
           <p className={styles.title}>问题线索登记表</p>
           <Form>
             <table className={styles.table}>
@@ -230,23 +224,13 @@ class LingDaoShenPiTable extends Component {
               相关附件:
               {dataSource.wenTiXianSuo_files &&
                 dataSource.wenTiXianSuo_files.map(item => (
-                  <a
-                    target='_blank'
-                    onClick={() => {
-                      exportFiles(`${window.server}/api/files/${item.response.path}`, item.response.path)
-                    }}
-                  >
+                  <a target='_blank' href={`${window.server}/api/files/${item.response.path}`}>
                     {item.response.fileName}&emsp;
                   </a>
                 ))}
               {dataSource.xianSuoChuZhi_files &&
                 dataSource.xianSuoChuZhi_files.map(item => (
-                  <a
-                    target='_blank'
-                    onClick={() => {
-                      exportFiles(`${window.server}/api/files/${item.response.path}`, item.response.path)
-                    }}
-                  >
+                  <a target='_blank' href={`${window.server}/api/files/${item.response.path}`}>
                     {item.response.fileName}&emsp;
                   </a>
                 ))}

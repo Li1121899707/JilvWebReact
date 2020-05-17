@@ -1,8 +1,3 @@
-/*
- * @author: 王志鹏
- * @Datetime  2020/2/19 15:23
- */
-
 import React, { Component } from 'react'
 import { Form, Input, Select, DatePicker, Upload, Button, notification, Timeline, Tabs } from 'antd'
 import moment from 'moment'
@@ -88,7 +83,6 @@ class dengJiJieGuoTable extends Component {
         post(`activiti/completeTask?taskId=${taskid}`, values).then(res => {
           put(`petitions/${reportNum}/resultClass?resultClass=${values.dengJiJieGuo_chuZhiJieGuoFenLei}`).then(result => {
             notification.success({ message: '提交成功' })
-            router.goBack()
             this.fetch()
           })
         })
@@ -115,7 +109,7 @@ class dengJiJieGuoTable extends Component {
     return (
       <div className={style.content}>
         <div className={style.content_box}>
-          <p className={style.title}>内蒙古自治区纪委监委驻自治区农信联社纪检监察组</p>
+          <p className={style.title}>中共内蒙古自治区农村信用社联合社检查委员会</p>
           <p className={style.title}>问题线索结果登记表</p>
           <Form>
             <table className={style.table}>

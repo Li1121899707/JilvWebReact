@@ -1,7 +1,3 @@
-/*
- * @author: bifan
- * @Datetime  2020/2/19 15:15
- */
 import React, { Component } from 'react'
 import { Button, Form, Input, Select, notification, Divider, DatePicker, Tabs, Timeline } from 'antd'
 import { Link, router } from 'umi'
@@ -68,7 +64,7 @@ class ScheduleTable extends Component {
     return (
       <div className={styles.content}>
         <div className={styles.content_box}>
-          <p className={styles.title}>内蒙古自治区纪委监委驻自治区农信联社纪检监察组</p>
+          <p className={styles.title}>中共内蒙古自治区农村信用社联合社检查委员会</p>
           <p className={styles.title}>谈话函询处置意见</p>
           <Form>
             <table className={styles.table}>

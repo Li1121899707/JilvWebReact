@@ -1,8 +1,3 @@
-/*
- * @author: 王志鹏
- * @Datetime  2020/3/13 10:30
- */
-
 import React, { Component } from 'react'
 import { Form, Col, Row, Input, Select, DatePicker, Button, Alert, Divider, Table, Tag } from 'antd'
 import moment from 'moment'

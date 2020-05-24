@@ -1,7 +1,6 @@
 import { router } from 'umi'
 import React, { Component, Fragment } from 'react'
 import { Form, Col, Row, Popconfirm, Button, notification, Table, Tabs, Tag, Modal } from 'antd'
-// import moment from 'moment'
 import moment from 'moment'
 import Breadcrumbs from '@/components/Breadcrumb'
 import { get, post, put } from '@/utils/http'
@@ -9,7 +8,6 @@ import { dateToUTC, exportFiles } from '@/utils/common'
 import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
 import UploadComp from '@/components/upload/Upload'
 
-// const { Option } = Select
 const { TabPane } = Tabs
 
 class AnJuanDetail extends Component {

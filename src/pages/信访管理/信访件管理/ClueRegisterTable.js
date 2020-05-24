@@ -305,6 +305,7 @@ class RegisterTable extends Component {
           }
           put(`petitions/mergeToClue`, { ...valId }).then(res => {})
           notification.success({ message: '提交成功' })
+          router.goBack()
         })
       })
     })
@@ -321,6 +322,7 @@ class RegisterTable extends Component {
       const taskId = this.state.data.historicUserTaskInstanceList[this.state.data.historicUserTaskInstanceList.length - 1].taskInstanceId
       post(`activiti/setProcessVariables/${this.id}`, { ...values }).then(res => {
         notification.success({ message: '提交成功' })
+        router.goBack()
       })
     })
   }

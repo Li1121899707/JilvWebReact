@@ -8,6 +8,7 @@ import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
 import { get, post } from '@/utils/http'
 import DisplayControlComponent from '@/pages/信访管理/common/DisplayControlComponent'
 import UploadComp from '@/components/upload/Upload'
+import { exportFiles } from '@/utils/common'
 
 const { Option } = Select
 
@@ -226,7 +227,9 @@ class XianSuoChuZhiTable extends Component {
               相关附件:
               {dataSource.wenTiXianSuo_files &&
                 dataSource.wenTiXianSuo_files.map(item => (
-                  <a target='_blank' href={`${window.server}/api/files/${item.response.path}`}>
+                  <a target='_blank' href={
+                    exportFiles(`${window.server}/api/files/${item.response.path}`, item.response.path)
+                    }>
                     {item.response.fileName}&emsp;
                   </a>
                 ))}

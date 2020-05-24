@@ -5,7 +5,6 @@ import Breadcrumbs from '@/components/Breadcrumb'
 import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
 import moment from 'moment'
 import { get } from '@/utils/http'
-// import { dateToUTC } from '@/utils/common'
 
 const { Option } = Select
 
@@ -60,11 +59,6 @@ class AnJuanGuanLi extends Component {
             if (item.indexOf('<') > -1) {
               values[item] = moment(values[item]).add(1, 'd')
             }
-            // if (item.indexOf('>')) {
-            //   console.log(values[item])
-            //   values[item] = moment(values[item]).subtract(1, 'd')
-            //   console.log(values[item])
-            // }
             values[item] = moment(values[item]).format('YYYY-MM-DD')
           }
 

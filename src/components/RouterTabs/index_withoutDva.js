@@ -57,9 +57,6 @@ class RouterTabs extends Component {
       }
 
       const { pathname } = _location;
-      // console.log("pathname");
-      // console.log(pathname);
-      // console.log(getTitleByPathname(pathname));
       if (pathname === '/' || !getTitleByPathname(pathname)) {
         this.setState({
           currentPageName: '',
@@ -68,13 +65,9 @@ class RouterTabs extends Component {
       }
 
       const newRefsTag = [...this.state.refsTag];
-      // console.log('newRefsTag');
-      // console.log(newRefsTag);
       const currentPathname = pathname;
       if (newRefsTag.indexOf(currentPathname) === -1) {
-        // console.log('push');
         newRefsTag.push(currentPathname);
-        // console.log(newRefsTag);
       }
       this.state.searchMap[pathname] = _location.search;
       this.setState({
@@ -133,9 +126,6 @@ class RouterTabs extends Component {
   };
 
   handleClickTag = (tag, e) => {
-    // if (e && e.target.tagName.toLowerCase() === 'i') {
-    //   return;
-    // }
     if (tag !== this.state.currentPageName) {
       this.props.history.push({
         pathname: tag,

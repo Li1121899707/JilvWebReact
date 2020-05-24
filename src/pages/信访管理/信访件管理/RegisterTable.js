@@ -8,6 +8,7 @@ import { get, post } from '@/utils/http'
 import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
 import UploadComp from '@/components/upload/Upload'
 import DisplayControlComponent from '@/pages/信访管理/common/DisplayControlComponent'
+import { exportFiles } from '@/utils/common'
 
 const { Option } = Select
 
@@ -75,6 +76,7 @@ class RegisterTable extends Component {
       // 开始流程接口
       post(`petitions`, { ...values }).then(res => {
         notification.success({ message: '提交成功' })
+        router.goBack()
       })
     })
   }
@@ -284,7 +286,9 @@ class RegisterTable extends Component {
                 相关附件:
                 {dataSource.attachment &&
                   dataSource.attachment.map(item => (
-                    <a target='_blank' href={`${window.server}/api/files/${item.response.path}`}>
+                    <a target='_blank' href={
+                      exportFiles(`${window.server}/api/files/${item.response.path}`, item.response.path)
+                      }>
                       {item.response.fileName}&emsp;
                     </a>
                   ))}

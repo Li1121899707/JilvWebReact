@@ -381,7 +381,8 @@ class LiAnShenChaChengPiShenPiTable extends Component {
                 ))}
               {dataSource.shangChuanHuiZhi_files &&
                 dataSource.shangChuanHuiZhi_files.map(item => (
-                  <a target='_blank' href={`${window.server}/api/files/${item.response.path}`}>
+                  // 修改的exportFiles
+                  <a target='_blank' href={exportFiles(`${window.server}/api/files/${item.response.path}`), item.response.path}>
                     {item.response.fileName}&emsp;
                   </a>
                 ))}

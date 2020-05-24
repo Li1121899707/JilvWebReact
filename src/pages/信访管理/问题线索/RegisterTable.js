@@ -245,10 +245,8 @@ class RegisterTable extends Component {
       if (err) return false
       values.wenTiXianSuo_dengJiTime = new Date()
       values.wenTiXianSuo_status = '未登记'
-      // wenTiXianSuo_biaoZhi、shenChaDiaoCha_status 调试使用  后期删除
-      // values.wenTiXianSuo_biaoZhi = '立案审查'
-      // values.shenChaDiaoCha_status = '未登记'
-      //   status 调试结束需改回问题线索
+
+      // status 调试结束需改回问题线索
       console.log(values.wenTiXianSuo_xianSuoLaiYuan)
       if (typeof values.wenTiXianSuo_xianSuoLaiYuan === 'string') {
         values.wenTiXianSuo_xianSuoLaiYuan = values.source
@@ -261,7 +259,7 @@ class RegisterTable extends Component {
       values.anJuan.chengXu = []
       values.anJuan.zhuTi = []
       values.anJuan.caiLiao = []
-      // console.log(values)
+
       // 开始流程接口
       post(`activiti/startProcess?processDefinitionKey=${processDefinitionKey}`, { ...values }).then(res => {
         const taskid = res.data.historicUserTaskInstanceList[res.data.historicUserTaskInstanceList.length - 1].taskInstanceId
@@ -276,7 +274,6 @@ class RegisterTable extends Component {
   }
 
   updateSubmit = () => {
-    console.log(111)
     this.props.form.validateFields((err, values) => {
       if (err) return false
       values.wenTiXianSuo_upDateTime = new Date()
@@ -299,6 +296,7 @@ class RegisterTable extends Component {
       const taskId = this.state.data.historicUserTaskInstanceList[this.state.data.historicUserTaskInstanceList.length - 1].taskInstanceId
       post(`activiti/setProcessVariables/${this.id}`, { ...values }).then(res => {
         notification.success({ message: '提交成功' })
+        router.goBack()
       })
     })
   }

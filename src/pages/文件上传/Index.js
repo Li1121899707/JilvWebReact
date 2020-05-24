@@ -1,12 +1,3 @@
-/*
- * @Author: lixiang
- * @Email: 619419059@qq.com
- * @Date: 2019-08-25 14:50:43
- * @Last Modified by: lixiang
- * @Last Modified time: 2019-09-03 09:08:13
- * @Description: Description
- */
-
 import React, { Component } from 'react'
 import { Form, Tabs } from 'antd'
 // import router from 'umi/router'

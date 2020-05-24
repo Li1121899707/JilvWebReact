@@ -8,15 +8,8 @@ let CancelAxiosRequest
 // axios 配置
 axios.defaults.timeout = 30000 // 设置超时时间
 axios.defaults.baseURL = `${window.server}/api/` // 这是调用数据接口
-// axios.defaults.baseURL = 'http://localhost:3000/api/'
 axios.interceptors.request.use(
   config => {
-    //  config.data = JSON.stringify(config.data);
-    //  config.data = qs.stringify(config.data);
-    // config.headers = {
-    //   'Content-Type': 'application/json;charset=utf-8', // 设置跨域头部,虽然很多浏览器默认都是使用json传数据，但咱要考虑IE浏览器。
-    //   //'Content-Type': 'application/x-www-form-urlencoded',
-    // }
     config.cancelToken = new CancelToken(function executor(c) {
       // An executor function receives a cancel function as a parameter
       CancelAxiosRequest = c

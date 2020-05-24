@@ -132,9 +132,9 @@ class UploadForFiles extends Component {
           onCancel={this.props.handleCancel}
           footer={[
             // 定义右下角 按钮的地方 可根据需要使用 一个或者 2个按钮
-            <a onClick={this.getTemplate} style={{ float: 'left', marginTop: 6 }}>
-              下载模板
-            </a>,
+            // <a onClick={this.getTemplate} style={{ float: 'left', marginTop: 6 }}>
+            //   下载模板
+            // </a>,
             <Button type='primary' onClick={this.handleUpload} disabled={this.state.fileList.length === 0} loading={this.state.uploading}>
               {this.state.uploading ? '正在上传' : '开始上传'}
             </Button>,

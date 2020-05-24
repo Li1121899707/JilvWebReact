@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Form, Input, Select, DatePicker, Upload, Button, notification, Timeline } from 'antd'
 import moment from 'moment'
 import style from '../Index.less'
+import { router } from 'umi'
 import TableInput from '../common/TableInput'
 import { get, post } from '@/utils/http'
 import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
@@ -90,17 +91,15 @@ class LiaoJieTable extends Component {
       }
       if (err) return false
       console.log(values)
-      // 开始流程接口
-      // post(`activiti/startProcess?processDefinitionKey=${processDefinitionKey}`, { ...values }).then(res => {
-      //   const processInstanceId = res.data.processInstanceId
-      //   //完成任务并指派下一审批人
+
+      // 完成任务并指派下一审批人
       post(
         `thread/claimAndComplete?taskId=${taskid}&processInstanceId=${processInstanceId}&nextAssignee=${this.state.leader}&isLocal=${0}`,
         values
       ).then(res => {
         notification.success({ message: '提交成功' })
+        router.goBack()
       })
-      // })
     })
   }
 

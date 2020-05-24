@@ -9,9 +9,8 @@ const Breadcrumbs = withBreadcrumbs(routes)(({ breadcrumbs }) => {
   return (
     <div style={{ height: 45, lineHeight: '45px', paddingLeft: 30, backgroundColor: '#fff', borderTop: '1px solid #e8e8e8' }}>
       {breadcrumbs.map(({ match, breadcrumb }, index) => {
-        // console.log(match)
-        // console.log(breadcrumb)
         if (match.url === '/') return null
+        if(breadcrumb.props.children === 'Petition') return null
         const color = index === breadcrumbs.length - 1 ? '#333333' : '#8d8d8d'
         return (
           <span key={match.url}>

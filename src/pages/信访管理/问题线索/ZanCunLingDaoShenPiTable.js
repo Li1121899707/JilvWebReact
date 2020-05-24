@@ -8,6 +8,7 @@ import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
 import { get, post } from '@/utils/http'
 import DisplayControlComponent from '@/pages/信访管理/common/DisplayControlComponent'
 import { formatLeader, isLeader, methodForIsLeader, untils } from '@/pages/信访管理/common/untils'
+import { exportFiles } from '@/utils/common'
 
 const { Option } = Select
 
@@ -94,16 +95,13 @@ class ZanCunLingDaoShenPiTable extends Component {
       })
 
       if (err) return false
-      // 开始流程接口
-      // post(`activiti/startProcess?processDefinitionKey=${processDefinitionKey}`, { ...values }).then(res => {
-      //   const processInstanceId = res.data.processInstanceId
-      //   //完成任务并指派下一审批人
+
       post(`thread/claimAndComplete?taskId=${taskid}&processInstanceId=${processInstanceId}&nextAssignee=${leader}&isLocal=${0}`, values).then(
         res => {
           notification.success({ message: '提交成功' })
+          router.goBack()
         }
       )
-      // })
     })
   }
 
@@ -227,7 +225,9 @@ class ZanCunLingDaoShenPiTable extends Component {
               相关附件:
               {dataSource.wenTiXianSuo_zanCunDaiCha_files &&
                 dataSource.wenTiXianSuo_zanCunDaiCha_files.map(item => (
-                  <a target='_blank' href={`${window.server}/api/files/${item.response.path}`}>
+                  <a target='_blank' href={
+                    exportFiles(`${window.server}/api/files/${item.response.path}`, item.response.path)
+                    }>
                     {item.response.fileName}&emsp;
                   </a>
                 ))}

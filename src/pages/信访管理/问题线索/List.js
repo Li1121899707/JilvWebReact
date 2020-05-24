@@ -4,7 +4,6 @@ import moment from 'moment'
 import { router } from 'umi'
 import Breadcrumbs from '@/components/Breadcrumb'
 import { get } from '@/utils/http'
-// import { dateToUTC } from '@/utils/common'
 import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
 
 const { Option } = Select
@@ -246,11 +245,7 @@ class List extends Component {
             if (item.indexOf('<') > -1) {
               values[item] = moment(values[item]).add(1, 'd')
             }
-            // if (item.indexOf('>')) {
-            //   console.log(values[item])
-            //   values[item] = moment(values[item]).subtract(1, 'd')
-            //   console.log(values[item])
-            // }
+
             values[item] = moment(values[item]).format('YYYY-MM-DD')
             console.log(values[item])
           }
@@ -263,6 +258,7 @@ class List extends Component {
         page: 0,
         ...params
       }).then(res => {
+        console.log(res)
         const { pagination } = this.state
         pagination.total = parseInt(res.headers['x-total-count'], 10)
         this.setState({

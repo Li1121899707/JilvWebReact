@@ -105,6 +105,7 @@ class YuYiLiaoJieLingDaoShenPiTable extends Component {
         values
       ).then(res => {
         notification.success({ message: '提交成功' })
+        router.goBack()
       })
     })
   }

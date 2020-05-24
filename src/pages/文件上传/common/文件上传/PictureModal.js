@@ -1,7 +1,3 @@
-/*
- * @author: 王志鹏
- * @Datetime  2020/1/13 10:09
- */
 import React, { Component } from 'react'
 import { Button, Icon, Modal, Upload } from 'antd'
 

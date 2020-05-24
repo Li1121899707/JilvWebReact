@@ -5,6 +5,7 @@ import { router, Link } from 'umi'
 import style from '@/pages/信访管理/Index.less'
 import TableInput from '@/pages/信访管理/common/TableInput'
 import { get } from '@/utils/http'
+import { exportFiles } from '@/utils/common'
 
 const { TabPane } = Tabs
 const { Option } = Select
@@ -204,7 +205,9 @@ class RegisterTableDetail extends Component {
             相关附件:
             {dataSource.wenTiXianSuo_files &&
               dataSource.wenTiXianSuo_files.map(item => (
-                <a target='_blank' href={`${window.server}/api/files/${item.response.path}`}>
+                <a target='_blank' href={
+                  exportFiles(`${window.server}/api/files/${item.response.path}`, item.response.path)
+                  }>
                   {item.response.fileName}&emsp;
                 </a>
               ))}

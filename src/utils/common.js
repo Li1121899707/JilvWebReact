@@ -246,7 +246,7 @@ function exportFiles(url, name) {
   xhr.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
   //设置响应类型为 blob   xhr.open必须为 异步
   xhr.responseType = 'blob'
-  //关键部分\
+  //关键部分
   xhr.send()
   xhr.onload = function(e) {
     //如果请求执行成功

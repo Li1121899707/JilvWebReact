@@ -222,24 +222,6 @@ class List extends Component {
               </Button>
               {record.state === '信访件已导入' ? (
                 <span>
-                  {/*<Button*/}
-                  {/*  type='link'*/}
-                  {/*  size='small'*/}
-                  {/*  onClick={() => {*/}
-                  {/*    router.push(`/admin/petition/letters/add/${record.id}/clueRegister`)*/}
-                  {/*  }}*/}
-                  {/*>*/}
-                  {/*  生成新线索*/}
-                  {/*</Button>*/}
-                  {/*<Button*/}
-                  {/*  type='link'*/}
-                  {/*  size='small'*/}
-                  {/*  onClick={() => {*/}
-                  {/*    router.push(`/admin/petition/letters/${record.id}/mergeList`)*/}
-                  {/*  }}*/}
-                  {/*>*/}
-                  {/*  合并到已有线索*/}
-                  {/*</Button>*/}
                   <Popconfirm
                     title='确认删除？'
                     icon={<Icon type='question-circle-o' style={{ color: 'red' }} />}
@@ -360,7 +342,7 @@ class List extends Component {
             onClick={() =>
               this.setState({
                 uploadModal: true,
-                name: '廉洁档案',
+                name: '信访件',
                 url: 'petitions/importExcel',
                 templateUrl: 'petitions/getExcel'
               })

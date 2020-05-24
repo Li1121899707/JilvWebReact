@@ -8,6 +8,7 @@ import { get, post } from '@/utils/http'
 import ProcessDefinitionKey from '../common/aboutActiviti'
 import DisplayControlComponent from '@/pages/信访管理/common/DisplayControlComponent'
 import { formatLeader, isLeader, methodForIsLeader, untils } from '@/pages/信访管理/common/untils'
+import { exportFiles } from '@/utils/common'
 
 const { Option } = Select
 
@@ -94,6 +95,7 @@ class LingDaoShenPiTable extends Component {
         values
       ).then(res => {
         notification.success({ message: '提交成功' })
+        router.goBack()
       })
     })
   }
@@ -224,13 +226,16 @@ class LingDaoShenPiTable extends Component {
               相关附件:
               {dataSource.wenTiXianSuo_files &&
                 dataSource.wenTiXianSuo_files.map(item => (
-                  <a target='_blank' href={`${window.server}/api/files/${item.response.path}`}>
+                  <a target='_blank' href={
+                    exportFiles(`${window.server}/api/files/${item.response.path}`, item.response.path)}>
                     {item.response.fileName}&emsp;
                   </a>
                 ))}
               {dataSource.xianSuoChuZhi_files &&
                 dataSource.xianSuoChuZhi_files.map(item => (
-                  <a target='_blank' href={`${window.server}/api/files/${item.response.path}`}>
+                  <a target='_blank' href={
+                    exportFiles(`${window.server}/api/files/${item.response.path}`, item.response.path)
+                    }>
                     {item.response.fileName}&emsp;
                   </a>
                 ))}

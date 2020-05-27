@@ -258,7 +258,7 @@ class List extends Component {
                   >
                     生成新线索
                   </Button>
-                  <Button
+                  {/* <Button
                     type='link'
                     size='small'
                     onClick={() => {
@@ -266,7 +266,7 @@ class List extends Component {
                     }}
                   >
                     合并到已有线索
-                  </Button>
+                  </Button> */}
                 </span>
               ) : (
                 ''

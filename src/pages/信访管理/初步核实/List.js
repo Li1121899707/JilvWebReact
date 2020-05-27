@@ -162,6 +162,11 @@ class List extends Component {
           link: `/admin/petition/clue/add/${processInstanceId}/dengJiJieGuo`,
           label: '登记结果'
         }
+      }else if (chuBuHeShi_status === '初核报告已审批') {
+        operateBtn = {
+          link: `/admin/petition/check/add/${processInstanceId}/dengJiJieGuo`,
+          label: '登记结果'
+        }
       }
     }
     let chaKanBtn = null

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Button, DatePicker, Form, Input, Select, Timeline, notification } from 'antd'
 import moment from 'moment'
+import { router } from 'umi'
 import styles from '@/pages/信访管理/Index.less'
 import TableInput from '@/pages/信访管理/common/TableInput'
 import { get, post } from '@/utils/http'
@@ -73,6 +74,7 @@ class DuBanXieBanJieGuoTable extends Component {
         val
       ).then(res => {
         notification.success({ message: '提交成功' })
+        router.goBack()
       })
     })
   }

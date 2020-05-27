@@ -25,7 +25,6 @@ class dengJiJieGuoTable extends Component {
       leaderOption_chuBuHeShi: [],
       leaderOption_shenChaDiaoCha: [],
       leaderOption_shenLiGuanLi: [],
-      xingTai: ['第一种形态', '第二种形态', '第三种形态', '第四种形态']
     }
     this.id = this.props.match.params.id
     this.type = this.props.match.params.type
@@ -75,15 +74,13 @@ class dengJiJieGuoTable extends Component {
     this.props.form.validateFields((err, values) => {
       if (
         values.dengJiJieGuo_chuZhiJieGuo &&
-        values.dengJiJieGuo_chuZhiJieGuoFenLei &&
-        values.dengJiJieGuo_isDangZhengLeader &&
-        values.dengJiJieGuo_siZhongXingTai
+        values.dengJiJieGuo_chuZhiJieGuoFenLei
       ) {
         values.status = '已办结'
         post(`activiti/completeTask?taskId=${taskid}`, values).then(res => {
           put(`petitions/${reportNum}/resultClass?resultClass=${values.dengJiJieGuo_chuZhiJieGuoFenLei}`).then(result => {
             notification.success({ message: '提交成功' })
-            router.goBack()
+            this.fetch()
           })
         })
       }
@@ -110,7 +107,7 @@ class dengJiJieGuoTable extends Component {
       <div className={style.content}>
         <div className={style.content_box}>
           <p className={style.title}>中共内蒙古自治区农村信用社联合社检查委员会</p>
-          <p className={style.title}>问题线索结果登记表</p>
+          <p className={style.title}>初步核实了结登记结果</p>
           <Form>
             <table className={style.table}>
               <tbody>
@@ -317,44 +314,7 @@ class dengJiJieGuoTable extends Component {
                     </TableInput>
                   </td>
                 </tr>
-                <tr>
-                  <td className={style.label}>四种形态归类</td>
-
-                  <td className={style.val} colSpan={1}>
-                    <TableInput data={dataSource.dengJiJieGuo_siZhongXingTai}>
-                      <Form.Item>
-                        {getFieldDecorator('dengJiJieGuo_siZhongXingTai', {
-                          rules: [{ required: true, message: '必填!' }]
-                        })(
-                          <Select style={{ width: '100%' }}>
-                            {this.state.xingTai.map((item, index) => {
-                              return (
-                                <Option key={index} value={item}>
-                                  {item}
-                                </Option>
-                              )
-                            })}
-                          </Select>
-                        )}
-                      </Form.Item>
-                    </TableInput>
-                  </td>
-                  <td className={style.label}>是否涉及党政领导</td>
-                  <td className={style.val} colSpan={1} height={60}>
-                    <TableInput data={dataSource.dengJiJieGuo_isDangZhengLeader}>
-                      <Form.Item>
-                        {getFieldDecorator('dengJiJieGuo_isDangZhengLeader', {
-                          rules: [{ required: true, message: '必填!' }]
-                        })(
-                          <Select>
-                            <Option value='是'>是</Option>
-                            <Option value='否'>否</Option>
-                          </Select>
-                        )}
-                      </Form.Item>
-                    </TableInput>
-                  </td>
-                </tr>
+                
                 <tr>
                   <td className={style.label}>处置结果分类</td>
                   <td className={style.val} colSpan={3} height={60}>

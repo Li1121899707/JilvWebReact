@@ -1,6 +1,7 @@
 import { router } from 'umi'
 import React, { Component, Fragment } from 'react'
 import { Form, Col, Row, Popconfirm, Button, notification, Table, Tabs, Tag, Modal } from 'antd'
+// import moment from 'moment'
 import moment from 'moment'
 import Breadcrumbs from '@/components/Breadcrumb'
 import { get, post, put } from '@/utils/http'
@@ -8,6 +9,7 @@ import { dateToUTC, exportFiles } from '@/utils/common'
 import ProcessDefinitionKey from '@/pages/信访管理/common/aboutActiviti'
 import UploadComp from '@/components/upload/Upload'
 
+// const { Option } = Select
 const { TabPane } = Tabs
 
 class AnJuanDetail extends Component {
@@ -16,7 +18,8 @@ class AnJuanDetail extends Component {
     this.PageSize = 10
     this.state = {
       loading: false,
-      dataSource: { form: { anJuan: {} } }
+      dataSource: { form: { anJuan: {} } },
+      anJuanTiJiao: ''
     }
     this.id = this.props.match.params.id
     this.addAnJuanType = '' // 添加案卷类型 chengXu  zhuTi caiLiao
@@ -30,7 +33,7 @@ class AnJuanDetail extends Component {
     get(`activiti/process/instance?processInstanceId=${this.id}`).then(res => {
       let chengXu = this.getChengXuJuan(res.data.form)
       chengXu.push(...res.data.form.anJuan.chengXu)
-      this.setState({ dataSource: res.data, chengXu })
+      this.setState({ dataSource: res.data, chengXu, anJuanTiJiao: res.data.form.anJuanTiJiao })
     })
   }
 
@@ -153,6 +156,24 @@ class AnJuanDetail extends Component {
     })
   }
 
+  submitForTiJiao = () => {
+    const { dataSource } = this.state
+    const val = {}
+    if (dataSource.form.anJuanTiJiao === '谈话函询') {
+      val.anJuanTiJiao = '初步核实'
+    } else if (dataSource.form.anJuanTiJiao === '初步核实') {
+      val.anJuanTiJiao = '审查调查'
+    } else if (dataSource.form.anJuanTiJiao === '审查调查') {
+      val.anJuanTiJiao = '审理管理'
+    } else {
+      val.anJuanTiJiao = '已提交'
+    }
+    post(`activiti/setProcessVariables/${this.id}`, val).then(res => {
+      notification.success({ message: '提交成功' })
+      router.push('/admin/petition/talk/archive')
+    })
+  }
+
   saveAnJuan = () => {
     const { fileList } = this.fileRef.state
     if (!fileList || fileList.length <= 0) {
@@ -163,7 +184,11 @@ class AnJuanDetail extends Component {
     fileList.forEach(item => {
       item.can_remove = true
     })
-    anJuan[this.addAnJuanType].push(...fileList)
+    console.log(anJuan)
+    let type = this.addAnJuanType
+    anJuan.type = []
+    console.log(anJuan)
+    anJuan.type.push(...fileList)
     this.submit(this.state.dataSource.form)
   }
 
@@ -202,7 +227,7 @@ class AnJuanDetail extends Component {
         render: (text, record, index) => <span>{index + 1}</span>
       },
       {
-        title: '题名',
+        title: '材料文件名',
         align: 'center',
         dataIndex: 'response.fileName'
       },
@@ -250,7 +275,7 @@ class AnJuanDetail extends Component {
                   下载
                 </a>
               )}
-              {((type === 'chengXu' && record.can_remove) || type !== 'chengXu') && (
+              {((type === 'chengXu' && record.can_remove) || type !== 'chengXu') && this.state.anJuanTiJiao !== '已提交' && (
                 <Popconfirm title='确认删除吗' onConfirm={() => this.removeFile(index, type, record)}>
                   <Button type='link' size='small'>
                     移除
@@ -265,7 +290,7 @@ class AnJuanDetail extends Component {
   }
 
   render() {
-    const { dataSource } = this.state
+    const { dataSource, anJuanTiJiao } = this.state
     const { form } = dataSource
     const { anJuan } = form
     return (
@@ -277,9 +302,11 @@ class AnJuanDetail extends Component {
               <div>
                 <div>
                   <p style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', float: 'left', width: '90%' }}>程序卷内目录</p>
-                  <Button type='primary' onClick={() => this.showModal('chengXu')}>
-                    填加案卷文件
-                  </Button>
+                  {anJuanTiJiao !== '已提交' && (
+                    <Button type='primary' onClick={() => this.showModal('chengXu')}>
+                      填加案卷文件
+                    </Button>
+                  )}
                 </div>
                 <Table
                   bordered
@@ -301,9 +328,11 @@ class AnJuanDetail extends Component {
               <div>
                 <div>
                   <p style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', float: 'left', width: '90%' }}>主体身份卷卷内目录</p>
-                  <Button type='primary' onClick={() => this.showModal('zhuTi')}>
-                    填加案卷文件
-                  </Button>
+                  {anJuanTiJiao !== '已提交' && (
+                    <Button type='primary' onClick={() => this.showModal('zhuTi')}>
+                      填加案卷文件
+                    </Button>
+                  )}
                 </div>
                 <Table
                   bordered
@@ -322,35 +351,74 @@ class AnJuanDetail extends Component {
                 />
               </div>
             </TabPane>
-            <TabPane tab='材料卷卷内目录' key='3'>
-              <div>
+            {dataSource.form.anJuanTiJiao !== '谈话函询' && dataSource.form.chuBuHeShi_status && (
+              <TabPane tab='材料卷卷内目录' key='3'>
                 <div>
-                  <p style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', float: 'left', width: '90%' }}>材料卷卷内目录</p>
-                  <Button type='primary' onClick={() => this.showModal('caiLiao')}>
-                    填加案卷文件
-                  </Button>
+                  <div>
+                    <p style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', float: 'left', width: '90%' }}>材料卷卷内目录</p>
+                    {anJuanTiJiao !== '已提交' && (
+                      <Button type='primary' onClick={() => this.showModal('caiLiao')}>
+                        填加案卷文件
+                      </Button>
+                    )}
+                  </div>
+                  <Table
+                    bordered
+                    title={() => (
+                      <div>
+                        <span>案卷提名: {form && form.anJuan.name}</span>
+                        <span style={{ marginLeft: 20 }}>案卷编号:</span>
+                      </div>
+                    )}
+                    rowKey={record => record.uid}
+                    dataSource={anJuan.caiLiao}
+                    columns={this.columns('caiLiao')}
+                    pagination={false}
+                    loading={this.state.loading}
+                    onChange={this.handleTableChange}
+                  />
                 </div>
-                <Table
-                  bordered
-                  title={() => (
-                    <div>
-                      <span>案卷提名: {form && form.anJuan.name}</span>
-                      <span style={{ marginLeft: 20 }}>案卷编号:</span>
-                    </div>
-                  )}
-                  rowKey={record => record.uid}
-                  dataSource={anJuan.caiLiao}
-                  columns={this.columns('caiLiao')}
-                  pagination={false}
-                  loading={this.state.loading}
-                  onChange={this.handleTableChange}
-                />
-              </div>
-            </TabPane>
+              </TabPane>
+            )}
+
+            {(dataSource.form.anJuanTiJiao === '审理管理' || dataSource.form.anJuanTiJiao === '已提交') && dataSource.form.shenLiGuanLi_status && (
+              <TabPane tab='审理卷卷内目录' key='4'>
+                <div>
+                  <div>
+                    <p style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', float: 'left', width: '90%' }}>审理卷卷内目录</p>
+                    {anJuanTiJiao !== '已提交' && (
+                      <Button type='primary' onClick={() => this.showModal('shenLi')}>
+                        填加案卷文件
+                      </Button>
+                    )}
+                  </div>
+                  <Table
+                    bordered
+                    title={() => (
+                      <div>
+                        <span>案卷提名: {form && form.anJuan.name}</span>
+                        <span style={{ marginLeft: 20 }}>案卷编号:</span>
+                      </div>
+                    )}
+                    rowKey={record => record.uid}
+                    dataSource={anJuan.shenLi}
+                    columns={this.columns('shenLi')}
+                    pagination={false}
+                    loading={this.state.loading}
+                    onChange={this.handleTableChange}
+                  />
+                </div>
+              </TabPane>
+            )}
           </Tabs>
-          <Button type='primary' style={{ marginTop: 10, marginLeft: '95%' }} onClick={() => router.push('/admin/petition/talk/archive')}>
+          <Button type='primary' style={{ marginTop: 10, marginLeft: '85%' }} onClick={() => router.push('/admin/petition/talk/archive')}>
             返回
           </Button>
+          {dataSource.form.anJuanTiJiao !== '已提交' && (
+            <Button type='primary' style={{ marginTop: 10, marginLeft: 2 }} onClick={this.submitForTiJiao}>
+              提交
+            </Button>
+          )}
         </div>
         <Modal
           title='上传案卷'

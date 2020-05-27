@@ -78,13 +78,13 @@ export default [
             title: '处置信访件',
             component: './信访管理/信访件管理/chuZhiXinFangJian'
           },
-          {
-            path: '/admin/letters/:id/mergeList/:name',
-            name: '合并到已有线索',
-            icon: 'appstore',
-            hideMenu: true,
-            component: './信访管理/信访件管理/MergeList'
-          }
+          // {
+          //   path: '/admin/letters/:id/mergeList/:name',
+          //   name: '合并到已有线索',
+          //   icon: 'appstore',
+          //   hideMenu: true,
+          //   component: './信访管理/信访件管理/MergeList'
+          // }
         ]
       },
       {
@@ -325,21 +325,22 @@ export default [
             title: '谈话函询进度管理',
             component: './信访管理/谈话函询/ScheduleList'
           },
-          {
-            path: '/admin/petition/talk/archive',
-            breadcrumb: '谈话函询案卷管理',
-            name: '谈话函询案卷管理',
-            title: '谈话函询案卷管理',
-            component: './信访管理/案卷管理/AnJuanGuanLi'
-          },
-          {
-            path: '/admin/petition/talk/archive/:id',
-            breadcrumb: '谈话函询案卷',
-            hideMenu: true,
-            name: '谈话函询案卷',
-            title: '谈话函询案卷',
-            component: './信访管理/案卷管理/AnJuanDetail'
-          }
+          
+          // {
+          //   path: '/admin/petition/talk/archive',
+          //   breadcrumb: '谈话函询案卷管理',
+          //   name: '谈话函询案卷管理',
+          //   title: '谈话函询案卷管理',
+          //   component: './信访管理/案卷管理/AnJuanGuanLi'
+          // },
+          // {
+          //   path: '/admin/petition/talk/archive/:id',
+          //   breadcrumb: '谈话函询案卷',
+          //   hideMenu: true,
+          //   name: '谈话函询案卷',
+          //   title: '谈话函询案卷',
+          //   component: './信访管理/案卷管理/AnJuanDetail'
+          // }
         ]
       },
       {
@@ -410,20 +411,28 @@ export default [
             component: './信访管理/初步核实/ScheduleList'
           },
           {
-            path: '/admin/petition/check/archive',
-            breadcrumb: '初步核实案卷管理',
-            name: '初步核实案卷管理',
-            title: '初步核实案卷管理',
-            component: './信访管理/案卷管理/AnJuanGuanLi'
-          },
-          {
-            path: '/admin/petition/check/archive/:id',
-            breadcrumb: '初步核实案卷',
+            path: '/admin/petition/check/:type/:id/dengJiJieGuo',
+            breadcrumb: '处理结果',
             hideMenu: true,
-            name: '初步核实案卷',
-            title: '初步核实案卷',
-            component: './信访管理/案卷管理/AnJuanDetail'
-          }
+            name: '处理结果',
+            title: '处理结果',
+            component: './信访管理/初步核实/dengJiJieGuoTable'
+          },
+          // {
+          //   path: '/admin/petition/check/archive',
+          //   breadcrumb: '初步核实案卷管理',
+          //   name: '初步核实案卷管理',
+          //   title: '初步核实案卷管理',
+          //   component: './信访管理/案卷管理/AnJuanGuanLi'
+          // },
+          // {
+          //   path: '/admin/petition/check/archive/:id',
+          //   breadcrumb: '初步核实案卷',
+          //   hideMenu: true,
+          //   name: '初步核实案卷',
+          //   title: '初步核实案卷',
+          //   component: './信访管理/案卷管理/AnJuanDetail'
+          // }
         ]
       },
       {
@@ -590,21 +599,21 @@ export default [
             title: '审查调查进度管理',
             component: './信访管理/审查调查/ScheduleList'
           },
-          {
-            path: '/admin/petition/investigation/archive',
-            breadcrumb: '审查调查案卷管理',
-            name: '审查调查案卷管理',
-            title: '审查调查案卷管理',
-            component: './信访管理/案卷管理/AnJuanGuanLi'
-          },
-          {
-            path: '/admin/petition/investigation/archive/:id',
-            breadcrumb: '审查调查案卷',
-            hideMenu: true,
-            name: '审查调查案卷',
-            title: '审查调查案卷',
-            component: './信访管理/案卷管理/AnJuanDetail'
-          }
+          // {
+          //   path: '/admin/petition/investigation/archive',
+          //   breadcrumb: '审查调查案卷管理',
+          //   name: '审查调查案卷管理',
+          //   title: '审查调查案卷管理',
+          //   component: './信访管理/案卷管理/AnJuanGuanLi'
+          // },
+          // {
+          //   path: '/admin/petition/investigation/archive/:id',
+          //   breadcrumb: '审查调查案卷',
+          //   hideMenu: true,
+          //   name: '审查调查案卷',
+          //   title: '审查调查案卷',
+          //   component: './信访管理/案卷管理/AnJuanDetail'
+          // }
         ]
       },
       {
@@ -688,21 +697,21 @@ export default [
             hideMenu: true,
             component: './信访管理/审理管理/delayList'
           },
-          {
-            path: '/admin/petition/management/archive',
-            breadcrumb: '审理案卷管理',
-            name: '审理案卷管理',
-            title: '审理案卷管理',
-            component: './信访管理/案卷管理/AnJuanGuanLi'
-          },
-          {
-            path: '/admin/petition/management/archive/:id',
-            breadcrumb: '审理案卷',
-            hideMenu: true,
-            name: '审理案卷',
-            title: '审理案卷',
-            component: './信访管理/案卷管理/AnJuanDetail'
-          }
+          // {
+          //   path: '/admin/petition/management/archive',
+          //   breadcrumb: '审理案卷管理',
+          //   name: '审理案卷管理',
+          //   title: '审理案卷管理',
+          //   component: './信访管理/案卷管理/AnJuanGuanLi'
+          // },
+          // {
+          //   path: '/admin/petition/management/archive/:id',
+          //   breadcrumb: '审理案卷',
+          //   hideMenu: true,
+          //   name: '审理案卷',
+          //   title: '审理案卷',
+          //   component: './信访管理/案卷管理/AnJuanDetail'
+          // }
         ]
       },
       {

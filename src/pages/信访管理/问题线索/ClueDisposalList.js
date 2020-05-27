@@ -858,14 +858,12 @@ class ClueDisposalList extends Component {
             </Row>
           </Form>
           <Divider />
-          <Button style={{ marginRight: 20 }} type='primary' onClick={this.export}>
-            导出上会资料
-          </Button>
+          
           <div>
             <Table
               rowKey={record => record.processInstanceId}
               dataSource={this.state.dataSource}
-              rowSelection={rowSelection}
+              // rowSelection={rowSelection}
               columns={columns}
               pagination={this.state.pagination}
               loading={this.state.loading}

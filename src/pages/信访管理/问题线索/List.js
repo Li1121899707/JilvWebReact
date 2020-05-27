@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Col, Row, Input, Select, DatePicker, Button, Alert, Divider, Table, Tag } from 'antd'
+import { Form, Col, Row, Input, Select, Popover, DatePicker, Button, Alert, Divider, Table, Tag } from 'antd'
 import moment from 'moment'
 import { router } from 'umi'
 import Breadcrumbs from '@/components/Breadcrumb'
@@ -646,12 +646,12 @@ class List extends Component {
           <Button style={{ marginRight: 20 }} type='primary' onClick={() => router.push(`/admin/petition/clue/add/register`)}>
             登记新线索
           </Button>
-          <Alert
+          <Popover
             style={{ marginTop: 5 }}
-            message={
+            title="办理情况统计"
+            content={
               <span>
-                统计: 问题线索
-                <span style={{ color: 'red' }}>{tongJiInfo.total || 0}</span>件<br />
+                <h3>问题线索<span style={{ color: 'red' }}>{tongJiInfo.total || 0}</span>件<br /></h3>
                 自办:<span style={{ color: 'red' }}>{tongJiInfo.self || 0}</span>件, 办结
                 <span style={{ color: 'red' }}>{tongJiInfo.selfEnd || 0}</span>件, 办理中
                 <span style={{ color: 'red' }}>{tongJiInfo.selfNotEnd || 0}</span>件<br />
@@ -670,9 +670,10 @@ class List extends Component {
                 <span style={{ color: 'red' }}>{tongJiInfo.assistNotEnd || 0}</span>件<br />
                 未登记:<span style={{ color: 'red' }}>{tongJiInfo.unregisted || 0}</span>件
               </span>
-            }
-            type='info'
-          />
+            }>
+              <Button type="primary">办理情况统计</Button>
+            </Popover>
+            
           <div>
             <Table
               rowKey={record => record.processInstanceId}
